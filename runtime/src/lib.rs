@@ -1,11 +1,25 @@
 use zenith_core::{Engine, error::Result};
 use std::sync::Arc;
-use std::path::{Path, PathBuf};
-use notify::{Watcher, RecursiveMode, RecommendedWatcher, Event, EventKind};
+use std::path::{PathBuf};
+use notify::{Watcher, RecursiveMode, RecommendedWatcher, EventKind};
 use tracing::{info, error, warn};
 use std::fs;
 use std::time::Duration;
 use tokio::sync::broadcast;
+
+// Runtime submodules
+pub mod sandbox;
+pub mod scheduler;
+pub mod vm;
+pub mod engine;
+pub mod host_calls;
+
+// Re-exports
+pub use engine::{RuntimeEngine, PluginMetadata};
+pub use sandbox::{Sandbox, SandboxLimits};
+pub use scheduler::{Scheduler, Priority};
+pub use vm::VM;
+pub use host_calls::HostCallInterface;
 
 /// The Zenith Runtime Manager.
 /// Handles lifecycle, configuration, and hot-reloading of plugins.

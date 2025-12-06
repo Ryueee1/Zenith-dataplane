@@ -1,0 +1,25 @@
+{
+    "name": "MarketTick",
+    "fields": [
+        {
+            "name": "symbol",
+            "type": "string",
+            "nullable": false
+        },
+        {
+            "name": "price",
+            "type": "float64",
+            "nullable": false
+        },
+        {
+            "name": "size",
+            "type": "uint32",
+            "nullable": false
+        },
+        {
+            "name": "timestamp_ns",
+            "type": "uint64",
+            "nullable": false
+        }
+    ]
+}

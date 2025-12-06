@@ -3655,6 +3655,9 @@ dependencies = [
  "tempfile",
  "tokio",
  "tracing",
+ "wasmtime",
+ "wasmtime-wasi",
+ "wat",
  "zenith-core",
 ]
 
