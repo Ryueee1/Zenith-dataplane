@@ -18,6 +18,7 @@
 | Component | Description | Status |
 | :--- | :--- | :--- |
 | **Core Engine** | Rust-based runtime managing ring buffers and plugins. | ✅ Stable (MVP) |
+| **Runtime Lib** | Application runner with Plugin Hot-Reloading. | ✅ Beta |
 | **CLI Tool** | Standalone daemon to run Zenith services. | ✅ Stable |
 | **Dashboard** | Web-based monitoring UI. | ✅ Beta |
 | **Python SDK** | `pyarrow` compatible bindings for zero-copy publish. | ✅ Stable |
