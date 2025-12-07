@@ -65,6 +65,7 @@ pub mod numa;
 pub mod pool;
 pub mod telemetry;
 pub mod thread;
+pub mod turbo;
 pub mod uring;
 
 // Re-exports
