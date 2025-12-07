@@ -21,12 +21,12 @@ Zenith is a high-performance infrastructure ecosystem designed to accelerate AI/
 
 ### 1.2 Key Metrics
 
-| Component | Metric | Target | Achieved |
-|-----------|--------|--------|----------|
-| CPU Engine | Latency P99 | < 100µs | ✓ |
-| Ring Buffer | Throughput | > 10M ops/s | ✓ |
-| Scheduler | Decision Time | < 10ms | ✓ |
-| GPU Runtime | GPU Util | > 95% | ✓ |
+| Component   | Metric          | Target      | Achieved |
+|-------------|-----------------|-------------|----------|
+| CPU Engine  | Latency P99     | < 100µs     | ✓        |
+| Ring Buffer | Throughput      | > 10M ops/s | ✓        |
+| Scheduler   | Decision Time   | < 10ms      | ✓        |
+| GPU Runtime | GPU Util        | > 95%       | ✓        |
 
 ---
 
@@ -34,7 +34,7 @@ Zenith is a high-performance infrastructure ecosystem designed to accelerate AI/
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
-│                              APPLICATION LAYER                               │
+│                              APPLICATION LAYER                              │
 │  ┌─────────────────┐  ┌─────────────────┐  ┌─────────────────────────────┐  │
 │  │ Python SDK      │  │ C ABI           │  │ gRPC/REST Clients           │  │
 │  │ (pip install)   │  │ (FFI bindings)  │  │ (job submission)            │  │
@@ -43,7 +43,7 @@ Zenith is a high-performance infrastructure ecosystem designed to accelerate AI/
             │                    │                         │
             ▼                    ▼                         ▼
 ┌─────────────────────────────────────────────────────────────────────────────┐
-│                              RUNTIME LAYER                                   │
+│                              RUNTIME LAYER                                  │
 │                                                                             │
 │  ┌────────────────────────┐  ┌────────────────────────────────────────────┐ │
 │  │    GPU Runtime         │  │           CPU Engine                       │ │
@@ -56,19 +56,19 @@ Zenith is a high-performance infrastructure ecosystem designed to accelerate AI/
 │  │  ┌──────────────────┐  │  │  ┌──────────────────┐ ┌──────────────────┐ │ │
 │  │  │ Memory Manager   │  │  │  │ Ring Buffers     │ │ Telemetry        │ │ │
 │  │  └──────────────────┘  │  │  └──────────────────┘ └──────────────────┘ │ │
-│  │  ┌──────────────────┐  │  │                                           │ │
-│  │  │ NCCL Collectives │  │  │                                           │ │
-│  │  └──────────────────┘  │  │                                           │ │
-│  └────────────────────────┘  └───────────────────────────────────────────┘ │
+│  │  ┌──────────────────┐  │  │                                            │ │
+│  │  │ NCCL Collectives │  │  │                                            │ │
+│  │  └──────────────────┘  │  │                                            │ │
+│  └────────────────────────┘  └─────────────────────────────────────────────┘│
 │                                                                             │
 └─────────────────────────────────────────────────────────────────────────────┘
             │                                              │
             ▼                                              ▼
 ┌─────────────────────────────────────────────────────────────────────────────┐
-│                           SCHEDULING LAYER                                   │
+│                           SCHEDULING LAYER                                  │
 │                                                                             │
 │  ┌─────────────────────────────────────────────────────────────────────────┐│
-│  │                        Zenith Job Scheduler                              ││
+│  │                        Zenith Job Scheduler                             ││
 │  │  ┌────────────────┐  ┌────────────────┐  ┌────────────────────────────┐ ││
 │  │  │ Job Queue      │  │ Gang Scheduling│  │ Node Registry              │ ││
 │  │  │ (Priority)     │  │ Engine         │  │                            │ ││
@@ -83,7 +83,7 @@ Zenith is a high-performance infrastructure ecosystem designed to accelerate AI/
             │
             ▼
 ┌─────────────────────────────────────────────────────────────────────────────┐
-│                           INFRASTRUCTURE LAYER                               │
+│                           INFRASTRUCTURE LAYER                              │
 │                                                                             │
 │  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐  ┌──────────────────┐ │
 │  │ GPU Nodes    │  │ CPU Nodes    │  │ Storage      │  │ Network Fabric   │ │
@@ -159,7 +159,7 @@ pub struct NumaTopology {
         │
         ▼
 ┌───────────────────────────────────────────────────────────┐
-│                    Kernel Manager                          │
+│                    Kernel Manager                         │
 │  ┌─────────────────────────────────────────────────────┐  │
 │  │  1. Check benchmark cache                           │  │
 │  │  2. If miss: run micro-benchmark                    │  │
@@ -169,12 +169,12 @@ pub struct NumaTopology {
         │
         ▼
 ┌───────────────────────────────────────────────────────────┐
-│            Kernel Selection Priority                       │
+│            Kernel Selection Priority                      │
 │                                                           │
-│  1. CUDA Native Kernel (if available, fastest for op)    │
-│  2. Triton Kernel (auto-tuned for shape)                 │
-│  3. TVM Generated (optimized for hardware)               │
-│  4. CPU Fallback (always available)                      │
+│  1. CUDA Native Kernel (if available, fastest for op)     │
+│  2. Triton Kernel (auto-tuned for shape)                  │
+│  3. TVM Generated (optimized for hardware)                │
+│  4. CPU Fallback (always available)                       │
 └───────────────────────────────────────────────────────────┘
 ```
 
@@ -260,13 +260,13 @@ Output: Allocation A or failure
 
 ```
 ┌────────────────────────────────────────────────────────────────┐
-│                       Arrow RecordBatch                         │
+│                       Arrow RecordBatch                        │
 ├────────────────────────────────────────────────────────────────┤
-│  Column 0: images     [FixedSizeBinary(3*224*224)]            │
+│  Column 0: images     [FixedSizeBinary(3*224*224)]             │
 │  Column 1: labels     [Int32]                                  │
 │  Column 2: metadata   [Struct{filename: Utf8, timestamp: i64}] │
 ├────────────────────────────────────────────────────────────────┤
-│  Zero-copy transfer to GPU via Arrow C Data Interface         │
+│  Zero-copy transfer to GPU via Arrow C Data Interface          │
 └────────────────────────────────────────────────────────────────┘
 ```
 

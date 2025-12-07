@@ -85,12 +85,12 @@ Proyek Zenith Infrastructure telah berhasil diimplementasikan sebagai fondasi in
 
 ### 2.3 Performance Characteristics
 
-| Component | Metric | Target | Achieved |
-|-----------|--------|--------|----------|
-| Ring Buffer Push | Latency | < 1µs | ~50ns |
-| Ring Buffer Pop | Latency | < 1µs | ~50ns |
-| NUMA Discovery | Time | < 100ms | ~10ms |
-| Scheduler Decision | Time | < 10ms | ~1ms |
+| Component          | Metric  | Target | Achieved |
+|--------------------|---------|--------|----------|
+| Ring Buffer Push   | Latency | < 1µs  | ~50ns    |
+| Ring Buffer Pop    | Latency | < 1µs  | ~50ns    |
+| NUMA Discovery     | Time    | < 100ms| ~10ms    |
+| Scheduler Decision | Time    | < 10ms | ~1ms     |
 
 ---
 
