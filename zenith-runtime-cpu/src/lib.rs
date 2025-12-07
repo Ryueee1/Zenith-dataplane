@@ -58,6 +58,7 @@ pub mod buffer;
 pub mod config;
 pub mod engine;
 pub mod io;
+pub mod metrics;
 pub mod numa;
 pub mod telemetry;
 pub mod thread;

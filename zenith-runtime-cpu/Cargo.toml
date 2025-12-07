@@ -46,6 +46,9 @@ core_affinity = "0.8"
 # Metrics
 metrics = "0.24"
 
+# HTTP server for metrics
+axum.workspace = true
+
 [dev-dependencies]
 criterion.workspace = true
 tempfile.workspace = true

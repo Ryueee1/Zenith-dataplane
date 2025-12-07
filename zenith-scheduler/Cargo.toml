@@ -36,6 +36,12 @@ tower.workspace = true
 priority-queue = "2.0"
 petgraph = "0.6"
 
+# Node agent
+hostname = "0.4"
+num_cpus = "1.16"
+sysinfo.workspace = true
+local-ip-address = "0.6"
+
 [dev-dependencies]
 criterion.workspace = true
 tempfile.workspace = true
