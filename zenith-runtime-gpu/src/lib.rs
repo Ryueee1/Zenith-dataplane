@@ -63,11 +63,17 @@ pub mod memory;
 pub mod collective;
 pub mod config;
 pub mod nvml;
+pub mod cuda;
+pub mod tensorrt;
+pub mod multigpu;
 
 // Re-exports
 pub use config::GpuRuntimeConfig;
 pub use device::{GpuDevice, GpuTopology};
 pub use nvml::NvmlManager;
+pub use cuda::{CudaRuntime, CudaError, DeviceProperties};
+pub use tensorrt::{TrtEngine, TrtContext, Precision as TrtPrecision};
+pub use multigpu::{MultiGpuComm, GpuTopology as MultiGpuTopology, MultiGpuStrategy};
 
 /// Crate version
 pub const VERSION: &str = env!("CARGO_PKG_VERSION");
