@@ -60,8 +60,10 @@ pub mod engine;
 pub mod io;
 pub mod metrics;
 pub mod numa;
+pub mod pool;
 pub mod telemetry;
 pub mod thread;
+pub mod uring;
 
 // Re-exports
 pub use config::EngineConfig;

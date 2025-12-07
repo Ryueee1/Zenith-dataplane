@@ -62,10 +62,12 @@ pub mod kernel;
 pub mod memory;
 pub mod collective;
 pub mod config;
+pub mod nvml;
 
 // Re-exports
 pub use config::GpuRuntimeConfig;
 pub use device::{GpuDevice, GpuTopology};
+pub use nvml::NvmlManager;
 
 /// Crate version
 pub const VERSION: &str = env!("CARGO_PKG_VERSION");
@@ -95,4 +97,8 @@ pub enum Error {
     /// Configuration errors
     #[error("Configuration error: {0}")]
     Config(String),
+    
+    /// GPU/NVML errors
+    #[error("GPU error: {0}")]
+    Gpu(String),
 }
