@@ -27,7 +27,21 @@ pip install torch
 python3 examples/pytorch_example.py
 ```
 
-### 3. Filter Plugin Demo
+### 3. Google Colab Demo (`zenith_demo_colab.ipynb`)
+
+**Recommended for first-time users!**
+
+Interactive Jupyter notebook demonstrating:
+- Data loading with Zenith
+- Performance benchmarks
+- PyTorch training integration
+- Multi-format support (Parquet, CSV, Arrow)
+- Job scheduling preview
+
+[Open in Google Colab](https://colab.research.google.com/github/vibeswithkk/Zenith-dataplane/blob/main/examples/zenith_demo_colab.ipynb)
+
+### 4. Filter Plugin Demo
+
 
 The `filter.wasm` file is a sample WASM plugin that filters events.
 
