@@ -1,6 +1,6 @@
 # Zenith Test Report
 
-**Version:** 0.2.1  
+**Version:** 0.2.2  
 **Author:** Wahyu Ardiansyah  
 **Date:** 2024-12-09  
 **Test Environment:** Linux x86_64  
@@ -9,15 +9,30 @@
 
 ## Executive Summary
 
-All tests pass with 100% success rate. The test suite covers critical functionality including data loading, FFI safety, input validation, and concurrent operations.
+All tests pass with 100% success rate. The test suite covers critical functionality including data loading, FFI safety, input validation, and concurrent operations. Mutation testing confirms high test quality with **86.3% mutation score**.
 
-| Category | Tests | Passed | Failed | Coverage |
-|----------|-------|--------|--------|----------|
-| Unit Tests | 52 | 52 | 0 | 100% |
-| Integration Tests | 5 | 5 | 0 | 100% |
-| **Total** | **57** | **57** | **0** | **100%** |
+### Test Coverage Summary
+
+| Category | Tests | Passed | Failed |
+|----------|-------|--------|--------|
+| zenith-core | 36 | 36 | 0 |
+| zenith-runtime-cpu | 52 | 52 | 0 |
+| **Total** | **88** | **88** | **0** |
+
+### Mutation Testing Results
+
+| Metric | Value | Status |
+|--------|-------|--------|
+| Total Mutants | 101 | - |
+| Caught (Tests Killed) | 44 | [OK] |
+| Missed | 7 | Acceptable |
+| Unviable (Build Errors) | 50 | Expected |
+| **Mutation Score** | **86.3%** | [OK] Excellent |
+
+**Note:** Mutation score is calculated as: caught / (caught + missed) = 44/51 = 86.3%
 
 ---
+
 
 ## 1. Test Summary by Module
 
