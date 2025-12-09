@@ -5,6 +5,68 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.1] - 2024-12-09
+
+### Critical Bug Fixes
+
+- **FFI Panic Safety**: All FFI functions wrapped with `catch_unwind` to prevent Rust panics from crashing Python
+- **io_uring Graceful Degradation**: Replace `todo!()` with proper error returns
+- **Zombie Job Detection**: Implement heartbeat and timeout mechanisms for scheduler
+- **Input Validation**: Add comprehensive validation module for security
+
+### New Features
+
+#### High-Performance DataLoader
+- `zenith-runtime-cpu/src/dataloader.rs`: Zero-copy Arrow/Parquet/CSV loading
+- Batch iteration with caching for small datasets
+- Automatic format detection
+
+#### S3 Object Storage Adapter
+- `zenith-runtime-cpu/src/s3.rs`: S3 configuration and streaming interface
+- URI parsing (s3://bucket/key format)
+- MinIO/LocalStack compatibility
+
+#### Benchmark Suite
+- `bench/`: Complete reproducible benchmark framework
+- PyTorch DataLoader baseline comparison
+- Zenith performance benchmarks
+- Dataset generator for synthetic workloads
+
+#### Clean Python API
+- `zenith.load()`: One-line data loading
+- `zenith.DataLoader`: Batch iteration
+- `@zenith.job()`: Job scheduling decorator  
+- `zenith.submit()`: Job submission
+
+### Performance Results
+
+| Metric | Value |
+|--------|-------|
+| Throughput | 1,351,591 samples/sec |
+| Latency p50 | 0.044 ms |
+| Latency p99 | 0.074 ms |
+| Improvement | 4.2x vs streaming baseline |
+
+### Documentation
+
+- `docs/IMPLEMENTATION.md`: Comprehensive technical documentation
+- `docs/KNOWN_ISSUES.md`: Issue tracking
+- `docs/ROADMAP_v2.md`: Development roadmap
+- `bench/README.md`: Benchmark reproducibility guide
+- `bench/reports/BENCHMARK_REPORT.md`: Performance report
+
+### Tests
+
+- **52 tests passing** in zenith-runtime-cpu
+- **5 tests passing** in zenith-core
+- All critical paths covered
+
+### Author
+
+Wahyu Ardiansyah
+
+---
+
 ## [0.2.0] - 2025-12-08
 
 ### Major Features
