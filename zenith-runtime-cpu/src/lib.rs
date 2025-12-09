@@ -64,6 +64,7 @@ pub mod io;
 pub mod metrics;
 pub mod numa;
 pub mod pool;
+pub mod s3;
 pub mod telemetry;
 pub mod thread;
 pub mod turbo;
