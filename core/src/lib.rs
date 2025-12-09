@@ -182,3 +182,156 @@ pub unsafe extern "C" fn zenith_load_plugin(
     }
 }
 
+#[cfg(test)]
+mod tests {
+    use super::*;
+    
+    #[test]
+    fn test_ffi_error_codes() {
+        // Verify FFI error codes are correctly defined
+        assert_eq!(ffi_error::SUCCESS, 0);
+        assert_eq!(ffi_error::NULL_POINTER, -1);
+        assert_eq!(ffi_error::BUFFER_FULL, -2);
+        assert_eq!(ffi_error::PANIC, -3);
+        assert_eq!(ffi_error::FFI_ERROR, -4);
+        assert_eq!(ffi_error::INIT_FAILED, -5);
+        
+        // Verify all error codes are distinct (negative numbers)
+        assert!(ffi_error::NULL_POINTER < 0);
+        assert!(ffi_error::BUFFER_FULL < 0);
+        assert!(ffi_error::PANIC < 0);
+        assert!(ffi_error::FFI_ERROR < 0);
+        assert!(ffi_error::INIT_FAILED < 0);
+    }
+    
+    #[test]
+    fn test_zenith_init_returns_valid_pointer() {
+        // Call zenith_init with valid buffer size
+        let ptr = zenith_init(1024);
+        
+        // Should return non-null pointer
+        assert!(!ptr.is_null(), "zenith_init should return non-null pointer");
+        
+        // Clean up
+        unsafe {
+            zenith_free(ptr);
+        }
+    }
+    
+    #[test]
+    fn test_zenith_init_various_sizes() {
+        // Test with different buffer sizes
+        let sizes = [64, 256, 1024, 4096];
+        
+        for size in sizes {
+            let ptr = zenith_init(size);
+            assert!(!ptr.is_null(), "zenith_init({}) should succeed", size);
+            
+            unsafe {
+                zenith_free(ptr);
+            }
+        }
+    }
+    
+    #[test]
+    fn test_zenith_free_null_pointer() {
+        // Calling zenith_free with null should be safe (no crash)
+        unsafe {
+            zenith_free(std::ptr::null_mut());
+        }
+        // If we got here without crash, the test passes
+    }
+    
+    #[test]
+    fn test_zenith_publish_null_pointers() {
+        // All null pointers should return NULL_POINTER error
+        unsafe {
+            let result = zenith_publish(
+                std::ptr::null_mut(),
+                std::ptr::null_mut(),
+                std::ptr::null_mut(),
+                0,
+                0
+            );
+            assert_eq!(result, ffi_error::NULL_POINTER, 
+                "zenith_publish with null engine should return NULL_POINTER");
+        }
+        
+        // Create valid engine, but null array/schema
+        let engine_ptr = zenith_init(1024);
+        assert!(!engine_ptr.is_null());
+        
+        unsafe {
+            let result = zenith_publish(
+                engine_ptr,
+                std::ptr::null_mut(),
+                std::ptr::null_mut(),
+                0,
+                0
+            );
+            assert_eq!(result, ffi_error::NULL_POINTER,
+                "zenith_publish with null array should return NULL_POINTER");
+            
+            zenith_free(engine_ptr);
+        }
+    }
+    
+    #[test]
+    fn test_zenith_load_plugin_null_pointers() {
+        unsafe {
+            // Null engine pointer
+            let result = zenith_load_plugin(
+                std::ptr::null_mut(),
+                std::ptr::null(),
+                0
+            );
+            assert_eq!(result, ffi_error::NULL_POINTER,
+                "zenith_load_plugin with null engine should return NULL_POINTER");
+        }
+        
+        // Create valid engine, but null wasm bytes
+        let engine_ptr = zenith_init(1024);
+        assert!(!engine_ptr.is_null());
+        
+        unsafe {
+            let result = zenith_load_plugin(
+                engine_ptr,
+                std::ptr::null(),
+                0
+            );
+            assert_eq!(result, ffi_error::NULL_POINTER,
+                "zenith_load_plugin with null bytes should return NULL_POINTER");
+            
+            zenith_free(engine_ptr);
+        }
+    }
+    
+    #[test]
+    fn test_zenith_load_plugin_invalid_wasm() {
+        let engine_ptr = zenith_init(1024);
+        assert!(!engine_ptr.is_null());
+        
+        // Invalid WASM bytes (not a valid module)
+        let invalid_wasm = b"this is not valid wasm";
+        
+        unsafe {
+            let result = zenith_load_plugin(
+                engine_ptr,
+                invalid_wasm.as_ptr(),
+                invalid_wasm.len()
+            );
+            // Should return an error (BUFFER_FULL is reused for load failed)
+            assert_eq!(result, ffi_error::BUFFER_FULL,
+                "Invalid WASM should return error");
+            
+            zenith_free(engine_ptr);
+        }
+    }
+    
+    #[test]
+    fn test_engine_and_event_reexports() {
+        // Test that Engine and Event are properly re-exported
+        let engine_result = Engine::new(1024);
+        assert!(engine_result.is_ok());
+    }
+}

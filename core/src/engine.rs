@@ -88,3 +88,72 @@ impl ZenithEngine {
         self.running.store(false, std::sync::atomic::Ordering::Relaxed);
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    
+    #[test]
+    fn test_engine_creation() {
+        let result = ZenithEngine::new(1024);
+        assert!(result.is_ok(), "Engine creation should succeed");
+        
+        let engine = result.unwrap();
+        // Verify the engine has a valid ring buffer
+        let buffer = engine.get_ring_buffer();
+        assert!(buffer.is_empty(), "New engine buffer should be empty");
+    }
+    
+    #[test]
+    fn test_engine_shutdown_sets_flag() {
+        let engine = ZenithEngine::new(1024).unwrap();
+        
+        // Verify running flag is initially true
+        assert!(engine.running.load(std::sync::atomic::Ordering::Relaxed),
+            "Engine running flag should be true initially");
+        
+        // Shutdown should set running to false
+        engine.shutdown();
+        
+        assert!(!engine.running.load(std::sync::atomic::Ordering::Relaxed),
+            "Engine running flag should be false after shutdown");
+    }
+    
+    #[test]
+    fn test_engine_get_ring_buffer() {
+        let engine = ZenithEngine::new(1024).unwrap();
+        
+        let buffer1 = engine.get_ring_buffer();
+        let buffer2 = engine.get_ring_buffer();
+        
+        // Both buffers should be clones sharing the same underlying queue
+        assert!(buffer1.is_empty());
+        assert!(buffer2.is_empty());
+    }
+    
+    #[test]
+    fn test_engine_load_plugin_with_invalid_wasm() {
+        let engine = ZenithEngine::new(1024).unwrap();
+        
+        // Invalid WASM bytes should fail
+        let invalid_wasm = b"not valid wasm bytes";
+        let result = engine.load_plugin(invalid_wasm);
+        
+        // This should return an error, not Ok(())
+        assert!(result.is_err(), "Invalid WASM should fail to load");
+    }
+    
+    #[test]
+    fn test_engine_multiple_operations() {
+        let engine = ZenithEngine::new(1024).unwrap();
+        
+        // Get buffer and verify it works
+        let buffer = engine.get_ring_buffer();
+        assert!(buffer.is_empty());
+        
+        // Shutdown and verify
+        engine.shutdown();
+        assert!(!engine.running.load(std::sync::atomic::Ordering::Relaxed));
+    }
+}
+

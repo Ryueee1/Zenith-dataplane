@@ -278,4 +278,263 @@ mod tests {
         assert_eq!(sanitize_string("hello\x00world"), "helloworld");
         assert_eq!(sanitize_string("line1\nline2"), "line1\nline2");
     }
+    
+    // ========================================================================
+    // MUTATION-KILLING TESTS - Comprehensive coverage for mutation testing
+    // ========================================================================
+    
+    #[test]
+    fn test_validate_length_boundary_conditions() {
+        let v = Validator::new();
+        
+        // Test exact boundary: length == max should pass
+        let exactly_max = "a".repeat(100);
+        assert!(v.validate_length("field", &exactly_max, 100).is_ok());
+        
+        // Test over boundary: length > max should fail
+        let over_max = "a".repeat(101);
+        assert!(v.validate_length("field", &over_max, 100).is_err());
+        
+        // Test under boundary: length < max should pass
+        let under_max = "a".repeat(99);
+        assert!(v.validate_length("field", &under_max, 100).is_ok());
+        
+        // This catches mutation: > replaced with ==
+        // If > becomes ==, then 101 > 100 would be false (fail to catch)
+        // but 100 == 100 would be true (incorrectly fail)
+        let exactly_100 = "a".repeat(100);
+        let exactly_101 = "a".repeat(101);
+        assert!(v.validate_length("field", &exactly_100, 100).is_ok(), 
+            "Exactly max should pass - catches > to == mutation");
+        assert!(v.validate_length("field", &exactly_101, 100).is_err(),
+            "Over max should fail - catches > to == mutation");
+    }
+    
+    #[test]
+    fn test_validate_range_boundary_conditions() {
+        let v = Validator::new();
+        
+        // Test exactly at min boundary
+        assert!(v.validate_range("test", 0, 0, 100).is_ok());
+        
+        // Test exactly at max boundary
+        assert!(v.validate_range("test", 100, 0, 100).is_ok());
+        
+        // Test below min (should fail)
+        assert!(v.validate_range("test", -1, 0, 100).is_err());
+        
+        // Test above max (should fail)
+        assert!(v.validate_range("test", 101, 0, 100).is_err());
+        
+        // This catches mutation: || replaced with &&
+        // If || becomes &&, then (value < min) && (value > max) is never true
+        // So values both below min and above max would incorrectly pass
+        assert!(v.validate_range("test", -10, 0, 100).is_err(),
+            "Below min should fail - catches || to && mutation");
+        assert!(v.validate_range("test", 200, 0, 100).is_err(),
+            "Above max should fail - catches || to && mutation");
+        
+        // This catches mutation: > replaced with ==
+        // value > max becomes value == max, so only exactly max fails
+        assert!(v.validate_range("test", 101, 0, 100).is_err(),
+            "Just above max should fail - catches > to == mutation");
+        assert!(v.validate_range("test", 100, 0, 100).is_ok(),
+            "Exactly max should pass - catches > to == mutation");
+    }
+    
+    #[test]
+    fn test_validate_buffer_size_arithmetic() {
+        let v = Validator::new();
+        
+        // Valid buffer sizes
+        assert!(v.validate_buffer_size(1).is_ok());
+        assert!(v.validate_buffer_size(1024).is_ok());
+        assert!(v.validate_buffer_size(1024 * 1024).is_ok());  // 1MB
+        
+        // Max valid: 1GB = 1024 * 1024 * 1024
+        assert!(v.validate_buffer_size(1024 * 1024 * 1024).is_ok());
+        
+        // Too large (over 1GB)
+        assert!(v.validate_buffer_size(1024 * 1024 * 1024 + 1).is_err());
+        
+        // Zero is invalid (below min of 1)
+        assert!(v.validate_buffer_size(0).is_err());
+        
+        // These catch arithmetic mutations (* -> +, * -> /)
+        // If 1024 * 1024 * 1024 becomes 1024 + 1024 + 1024 = 3072
+        // then 1MB (1048576) would incorrectly fail
+        // If 1024 * 1024 * 1024 becomes 1024 / 1024 / 1024 = 0
+        // then almost everything would fail
+        let one_mb = 1024 * 1024;
+        assert!(v.validate_buffer_size(one_mb).is_ok(),
+            "1MB should be valid - catches * to + or / mutation");
+        
+        let half_gb = 512 * 1024 * 1024;
+        assert!(v.validate_buffer_size(half_gb).is_ok(),
+            "512MB should be valid - catches arithmetic mutations");
+    }
+    
+    #[test]
+    fn test_sanitize_log_message_truncation() {
+        // Test that truncation happens at correct length
+        let short_msg = "short message";
+        assert_eq!(sanitize_log_message(short_msg), short_msg);
+        
+        // Exactly at max length
+        let exactly_max = "a".repeat(MAX_STRING_LENGTH);
+        assert_eq!(sanitize_log_message(&exactly_max), exactly_max);
+        
+        // Over max length - should truncate
+        let over_max = "a".repeat(MAX_STRING_LENGTH + 100);
+        let truncated = sanitize_log_message(&over_max);
+        assert!(truncated.ends_with("... [truncated]"));
+        assert!(truncated.len() < over_max.len());
+        
+        // This catches mutation: > replaced with < or ==
+        // If > becomes <, short messages would be truncated
+        // If > becomes ==, only exactly MAX_STRING_LENGTH would be truncated
+        let just_over = "a".repeat(MAX_STRING_LENGTH + 1);
+        let result = sanitize_log_message(&just_over);
+        assert!(result.ends_with("... [truncated]"),
+            "Just over max should truncate - catches > to < or == mutation");
+        
+        // Verify non-truncated doesn't have suffix
+        let at_max = "b".repeat(MAX_STRING_LENGTH);
+        let result_at_max = sanitize_log_message(&at_max);
+        assert!(!result_at_max.ends_with("... [truncated]"),
+            "At max should not truncate - catches > to < mutation");
+    }
+    
+    #[test]
+    fn test_sanitize_log_message_returns_string() {
+        // Catches mutation: replace with String::new() or "xyzzy".into()
+        let input = "hello world";
+        let result = sanitize_log_message(input);
+        
+        // Result should contain the input content
+        assert!(result.contains("hello"),
+            "Result should contain input - catches return value mutations");
+        assert!(result.contains("world"),
+            "Result should contain input - catches return value mutations");
+        
+        // Specific check for "xyzzy" mutation
+        assert!(!result.contains("xyzzy"),
+            "Result should not be 'xyzzy' - catches specific mutation");
+        
+        // Check it's not empty
+        assert!(!result.is_empty(),
+            "Result should not be empty - catches String::new() mutation");
+    }
+    
+    #[test]
+    fn test_validation_error_display() {
+        // Test Display trait to catch fmt mutation
+        let empty_err = ValidationError::Empty("field".to_string());
+        let display = format!("{}", empty_err);
+        assert!(display.contains("field"));
+        assert!(display.contains("empty"));
+        
+        let too_long = ValidationError::TooLong { 
+            field: "name".to_string(), 
+            max: 10, 
+            actual: 20 
+        };
+        let display = format!("{}", too_long);
+        assert!(display.contains("name"));
+        assert!(display.contains("10"));
+        assert!(display.contains("20"));
+        
+        let invalid_chars = ValidationError::InvalidChars {
+            field: "test".to_string(),
+            invalid: "!@#".to_string(),
+        };
+        let display = format!("{}", invalid_chars);
+        assert!(display.contains("test"));
+        assert!(display.contains("!@#"));
+        
+        let forbidden = ValidationError::ForbiddenPattern {
+            field: "cmd".to_string(),
+            pattern: "&&".to_string(),
+        };
+        let display = format!("{}", forbidden);
+        assert!(display.contains("cmd"));
+        assert!(display.contains("&&"));
+        
+        let out_of_range = ValidationError::OutOfRange {
+            field: "value".to_string(),
+            min: 0,
+            max: 100,
+            actual: 200,
+        };
+        let display = format!("{}", out_of_range);
+        assert!(display.contains("value"));
+        assert!(display.contains("0"));
+        assert!(display.contains("100"));
+        assert!(display.contains("200"));
+        
+        let invalid = ValidationError::Invalid("custom error".to_string());
+        let display = format!("{}", invalid);
+        assert!(display.contains("custom error"));
+    }
+    
+    #[test]
+    fn test_require_non_empty() {
+        let v = Validator::new();
+        
+        // Non-empty should pass
+        assert!(v.require_non_empty("field", "value").is_ok());
+        
+        // Empty should fail
+        assert!(v.require_non_empty("field", "").is_err());
+        
+        // Whitespace-only should fail (trimmed)
+        assert!(v.require_non_empty("field", "   ").is_err());
+        assert!(v.require_non_empty("field", "\t\n").is_err());
+    }
+    
+    #[test]
+    fn test_validate_gpu_count_boundaries() {
+        let v = Validator::new();
+        
+        // Valid range: 0 to 1024
+        assert!(v.validate_gpu_count(0).is_ok());
+        assert!(v.validate_gpu_count(1024).is_ok());
+        assert!(v.validate_gpu_count(512).is_ok());
+        
+        // Invalid: over 1024
+        // Note: u32 can't be negative, so we only test upper bound
+        assert!(v.validate_gpu_count(1025).is_err());
+    }
+    
+    #[test]
+    fn test_validate_priority_boundaries() {
+        let v = Validator::new();
+        
+        // Valid range: -1000 to 1000
+        assert!(v.validate_priority(-1000).is_ok());
+        assert!(v.validate_priority(1000).is_ok());
+        assert!(v.validate_priority(0).is_ok());
+        
+        // Invalid
+        assert!(v.validate_priority(-1001).is_err());
+        assert!(v.validate_priority(1001).is_err());
+    }
+    
+    #[test]
+    fn test_sanitize_string_control_chars() {
+        // Test various control characters are removed
+        assert_eq!(sanitize_string("a\x00b"), "ab");  // null
+        assert_eq!(sanitize_string("a\x01b"), "ab");  // SOH
+        assert_eq!(sanitize_string("a\x07b"), "ab");  // bell
+        assert_eq!(sanitize_string("a\x1Bb"), "ab");  // escape
+        
+        // Tab and newline should be preserved
+        assert_eq!(sanitize_string("a\tb"), "a\tb");
+        assert_eq!(sanitize_string("a\nb"), "a\nb");
+        assert_eq!(sanitize_string("a\n\tb"), "a\n\tb");
+        
+        // Normal text unchanged
+        assert_eq!(sanitize_string("hello world"), "hello world");
+        assert_eq!(sanitize_string(""), "");
+    }
 }
