@@ -56,9 +56,23 @@ Runtime: ~15 minutes on Colab GPU
 
 [Open Full Test in Colab](https://colab.research.google.com/github/vibeswithkk/Zenith-dataplane/blob/main/examples/zenith_full_test_colab.ipynb)
 
-### 5. Filter Plugin Demo
+### 5. WASM Plugin Test (`zenith_wasm_test_colab.ipynb`)
+
+**Test WebAssembly plugin system!**
+
+Demonstrates WASM plugin capabilities:
+- Compile Rust to WebAssembly (wasm32-wasi)
+- Load and analyze WASM modules
+- Call plugin functions directly
+- Performance benchmarking
+- Zenith engine integration
+
+[Open WASM Test in Colab](https://colab.research.google.com/github/vibeswithkk/Zenith-dataplane/blob/main/examples/zenith_wasm_test_colab.ipynb)
+
+### 6. Filter Plugin Demo
 
 The `filter.wasm` file is a sample WASM plugin that filters events.
+See `plugins/filter_plugin.rs` for the source code.
 
 
 ## Data
