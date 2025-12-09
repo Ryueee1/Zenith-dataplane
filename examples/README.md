@@ -40,10 +40,26 @@ Interactive Jupyter notebook demonstrating:
 
 [Open in Google Colab](https://colab.research.google.com/github/vibeswithkk/Zenith-dataplane/blob/main/examples/zenith_demo_colab.ipynb)
 
-### 4. Filter Plugin Demo
+### 4. Full Engine Test (`zenith_full_test_colab.ipynb`)
 
+**Complete testing of Zenith engine on Colab!**
+
+Comprehensive notebook that:
+- Installs Rust toolchain and compiles from source
+- Runs all 103 unit tests
+- Benchmarks with multiple dataset sizes
+- Tests DataLoader with different batch sizes
+- Runs full ML training pipeline
+- Generates performance visualizations
+
+Runtime: ~15 minutes on Colab GPU
+
+[Open Full Test in Colab](https://colab.research.google.com/github/vibeswithkk/Zenith-dataplane/blob/main/examples/zenith_full_test_colab.ipynb)
+
+### 5. Filter Plugin Demo
 
 The `filter.wasm` file is a sample WASM plugin that filters events.
+
 
 ## Data
 
