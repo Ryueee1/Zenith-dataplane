@@ -46,32 +46,32 @@ These components have been thoroughly tested and are ready for production use:
 
 ### Core Runtime Components
 
-| Component | Description | Performance | Tests |
-|-----------|-------------|-------------|-------|
-| **SPSC Ring Buffer** | Lock-free single-producer single-consumer queue | **43M+ ops/sec** | [OK] 4 tests |
-| **MPMC Ring Buffer** | Multi-producer multi-consumer queue | High throughput | [OK] Tested |
-| **Memory Pool** | Slab-based memory allocation | Zero leaks | [OK] 4 tests |
-| **NUMA Allocator** | NUMA-aware memory allocation | Optimized | [OK] 2 tests |
-| **NUMA Topology Discovery** | Automatic system topology detection | < 1ms | [OK] 2 tests |
-| **Telemetry Collector** | Real-time metrics collection | 10K events in 191µs | [OK] Tested |
-| **Thread Pool** | CPU-pinned thread management | Per-core affinity | [OK] 2 tests |
+| Component                   | Description                                     | Performance         | Tests        |
+|-----------------------------|-------------------------------------------------|---------------------|--------------|
+| **SPSC Ring Buffer**        | Lock-free single-producer single-consumer queue | **43M+ ops/sec**    | [OK] 4 tests |
+| **MPMC Ring Buffer**        | Multi-producer multi-consumer queue             | High throughput     | [OK] Tested  |
+| **Memory Pool**             | Slab-based memory allocation                    | Zero leaks          | [OK] 4 tests |
+| **NUMA Allocator**          | NUMA-aware memory allocation                    | Optimized           | [OK] 2 tests |
+| **NUMA Topology Discovery** | Automatic system topology detection             | < 1ms               | [OK] 2 tests |
+| **Telemetry Collector**     | Real-time metrics collection                    | 10K events in 191µs | [OK] Tested  |
+| **Thread Pool**             | CPU-pinned thread management                    | Per-core affinity   | [OK] 2 tests |
 
 ### Scheduler Components
 
-| Component | Description | Features | Tests |
-|-----------|-------------|----------|-------|
-| **Job State Machine** | Job lifecycle management | 7 states, transitions | [OK] 2 tests |
-| **Gang Scheduler** | All-or-nothing resource allocation | Topology-aware | [OK] 1 test |
-| **Node Registry** | Compute node management | GPU tracking | [OK] 3 tests |
-| **State Persistence** | Durable job/node storage | JSON-based | [OK] 2 tests |
+| Component                   | Description                                     | Features              | Tests        |
+|-----------------------------|-------------------------------------------------|-----------------------|--------------|
+| **Job State Machine**       | Job lifecycle management                        | 7 states, transitions | [OK] 2 tests |
+| **Gang Scheduler**          | All-or-nothing resource allocation              | Topology-aware        | [OK] 1 test  |
+| **Node Registry**           | Compute node management                         | GPU tracking          | [OK] 3 tests |
+| **State Persistence**       | Durable job/node storage                        | JSON-based            | [OK] 2 tests |
 
 ### Production Hardening
 
-| Component | Description | Pattern | Tests |
-|-----------|-------------|---------|-------|
-| **Circuit Breaker** | Fault tolerance | Industry standard | [OK] 3 tests |
-| **Health Checks** | Liveness/readiness probes | K8s compatible | [OK] 2 tests |
-| **Prometheus Metrics** | Metrics export | `/metrics` endpoint | [OK] Ready |
+| Component              | Description               |  Pattern                  | Tests        |
+|------------------------|---------------------------|---------------------------|--------------|
+| **Circuit Breaker**    | Fault tolerance           | Industry standard         | [OK] 3 tests |
+| **Health Checks**      | Liveness/readiness probes | K8s compatible            | [OK] 2 tests |
+| **Prometheus Metrics** | Metrics export            | `/metrics` endpoint       | [OK] Ready   |
 
 ---
 
@@ -81,12 +81,12 @@ These components are implemented but require testing in real environments:
 
 ### 1. Kubernetes Deployment
 
-| Item | Current Status | Testing Required |
-|------|----------------|------------------|
-| **Helm Chart** | [OK] Templates valid, YAML verified | Deploy to real K8s cluster |
-| **Dockerfile** | [OK] Multi-stage build ready | Build image, run container |
-| **Service Discovery** | [OK] Service definitions ready | Test with real Kubernetes DNS |
-| **Horizontal Scaling** | [OK] HPA configuration ready | Load test with auto-scaling |
+| Item                   | Current Status                      | Testing Required              |
+|------------------------|-------------------------------------|-------------------------------|
+| **Helm Chart**         | [OK] Templates valid, YAML verified | Deploy to real K8s cluster    |
+| **Dockerfile**         | [OK] Multi-stage build ready        | Build image, run container    |
+| **Service Discovery**  | [OK] Service definitions ready      | Test with real Kubernetes DNS |
+| **Horizontal Scaling** | [OK] HPA configuration ready        | Load test with auto-scaling   |
 
 **How to test:**
 ```bash
@@ -103,14 +103,14 @@ curl http://localhost:8080/health
 
 ### 2. REST API Server
 
-| Endpoint | Method | Status | Testing Required |
-|----------|--------|--------|------------------|
-| `/api/v1/jobs` | POST | [OK] Implemented | Submit real jobs |
-| `/api/v1/jobs/:id` | GET | [OK] Implemented | Query job status |
-| `/api/v1/jobs/:id` | DELETE | [OK] Implemented | Cancel running jobs |
-| `/api/v1/cluster/status` | GET | [OK] Implemented | Multi-node status |
-| `/api/v1/nodes` | GET | [OK] Implemented | Node listing |
-| `/health` | GET | [OK] Implemented | N/A (ready) |
+| Endpoint                   | Method | Status           | Testing Required    |
+|----------------------------|--------|------------------|---------------------|
+| `/api/v1/jobs`             | POST   | [OK] Implemented | Submit real jobs    |
+| `/api/v1/jobs/:id`         | GET    | [OK] Implemented | Query job status    |
+| `/api/v1/jobs/:id`         | DELETE | [OK] Implemented | Cancel running jobs |
+| `/api/v1/cluster/status`   | GET    | [OK] Implemented | Multi-node status   |
+| `/api/v1/nodes`            | GET    | [OK] Implemented | Node listing        |
+| `/health`                  | GET    | [OK] Implemented | N/A (ready)         |
 
 **How to test:**
 ```bash
@@ -125,12 +125,12 @@ curl -X POST http://localhost:8080/api/v1/jobs \
 
 ### 3. gRPC API Server
 
-| Service | Method | Status | Testing Required |
-|---------|--------|--------|------------------|
-| SchedulerService | SubmitJob | [OK] Implemented | gRPC client calls |
-| SchedulerService | GetJobStatus | [OK] Implemented | Status queries |
-| SchedulerService | CancelJob | [OK] Implemented | Cancellation flow |
-| SchedulerService | GetClusterStatus | [OK] Implemented | Cluster overview |
+| Service          | Method           | Status           | Testing Required  |
+|------------------|------------------|------------------|-------------------|
+| SchedulerService | SubmitJob        | [OK] Implemented | gRPC client calls |
+| SchedulerService | GetJobStatus     | [OK] Implemented | Status queries    |
+| SchedulerService | CancelJob        | [OK] Implemented | Cancellation flow |
+| SchedulerService | GetClusterStatus | [OK] Implemented | Cluster overview  |
 
 **How to test:**
 ```bash
@@ -141,12 +141,12 @@ grpcurl -plaintext -d '{"name":"test"}' localhost:50051 zenith.Scheduler/SubmitJ
 
 ### 4. GPU Features
 
-| Feature | Current Status | Hardware Required |
-|---------|----------------|-------------------|
-| **GPU Discovery** | nvidia-smi parsing | NVIDIA GPU + driver |
-| **Memory Monitoring** | nvidia-smi based | Any NVIDIA GPU |
-| **NVLink Detection** | Placeholder | Multi-GPU NVLink system |
-| **GPU Topology** | Basic implementation | GPU server |
+| Feature               | Current Status      | Hardware Required       |
+|-----------------------|---------------------|-------------------------|
+| **GPU Discovery**     | nvidia-smi parsing  | NVIDIA GPU + driver     |
+| **Memory Monitoring** | nvidia-smi based    | Any NVIDIA GPU          |
+| **NVLink Detection**  | Placeholder         | Multi-GPU NVLink system |
+| **GPU Topology**      | Basic implementation| GPU server              |
 
 **How to test:**
 ```bash
@@ -159,10 +159,10 @@ cargo test -p zenith-runtime-gpu -- --nocapture
 
 | Feature | Current Status | Requirements |
 |---------|----------------|--------------|
-| **Basic Operations** | [OK] Implemented | Linux kernel 5.1+ |
-| **Submission Queue** | [OK] Mutex-protected | Modern Linux |
-| **Completion Queue** | [OK] Implemented | io_uring support |
-| **Registered Buffers** | Planned | Advanced use case |
+| **Basic Operations**   | [OK] Implemented     | Linux kernel 5.1+ |
+| **Submission Queue**   | [OK] Mutex-protected | Modern Linux |
+| **Completion Queue**   | [OK] Implemented     | io_uring support |
+| **Registered Buffers** | Planned |            Advanced use case |
 
 **How to test:**
 ```bash

@@ -5,6 +5,61 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.2] - 2024-12-10
+
+### Security & Compliance
+
+- **SLSA Level 4**: Complete supply chain security implementation
+  - Two-person review enforcement
+  - Hermetic build environment
+  - Build provenance attestation via SLSA GitHub Generator
+  - `.github/workflows/slsa-release.yml` workflow
+
+- **SBOM (Software Bill of Materials)**
+  - 13 CycloneDX v1.5 SBOM files generated
+  - `docs/SBOM_POLICY.md`: SBOM generation policy
+  - Automated SBOM generation in CI/CD
+
+### Code Quality
+
+- **Error Handling Hardening**
+  - Replace `unwrap()` with proper error handling in `core/src/engine.rs`
+  - Replace `unwrap()` with mutex recovery in `core/src/admin_api.rs`
+  - Graceful server binding errors
+
+- **New Tests**: 15 REST API tests added
+  - Response serialization tests
+  - Handler tests (health, cluster status, nodes)
+  - Error handling tests (not found, cancel)
+  - Total test count: 88+ passing
+
+### Quality Assurance
+
+- **QA Report** (`docs/QA_REPORT.md`)
+  - Code Coverage: 51.24% (1,161/2,266 lines)
+  - Mutation Score: 40.1% (336/855 viable mutants)
+  - Professional roadmap to 80% coverage
+
+- **Coverage Report**: HTML report at `docs/coverage/tarpaulin-report.html`
+
+### Documentation
+
+- `docs/SLSA_COMPLIANCE.md`: Full SLSA Level 4 guide
+- `docs/QA_REPORT.md`: Comprehensive quality metrics
+- Updated `README.md` with verified benchmarks
+- Fixed Issue #2: Remove incorrect `strip` option in PLUGIN_GUIDE.md
+
+### Community
+
+- First external contribution from @nickendwilestari-del
+- Issue #2 resolved and closed
+
+### Author
+
+Wahyu Ardiansyah
+
+---
+
 ## [0.2.1] - 2024-12-09
 
 ### Critical Bug Fixes
@@ -40,12 +95,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Performance Results
 
-| Metric | Value |
-|--------|-------|
-| Throughput | 1,351,591 samples/sec |
-| Latency p50 | 0.044 ms |
-| Latency p99 | 0.074 ms |
-| Improvement | 4.2x vs streaming baseline |
+| Metric        | Value                      |
+|---------------|----------------------------|
+| Throughput    | 1,351,591 samples/sec      |
+| Latency p50   | 0.044 ms                   |
+| Latency p99   | 0.074 ms                   |
+| Improvement   | 4.2x vs streaming baseline |
 
 ### Documentation
 
