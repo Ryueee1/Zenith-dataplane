@@ -487,5 +487,288 @@ mod tests {
         
         assert_eq!(decisions.len(), 1);
         assert_eq!(scheduler.queue_size(), 0);
+        
+        // Verify job state
+        let job = scheduler.get_job(&job_id).unwrap();
+        assert_eq!(job.state, JobState::Scheduled);
+    }
+    
+    #[test]
+    fn test_scheduler_cancel() {
+        let registry = Arc::new(NodeRegistry::new(60));
+        registry.register(create_test_node("node-1", 4)).unwrap();
+        
+        let scheduler = Scheduler::new(registry, SchedulerConfig::default());
+        
+        let descriptor = JobDescriptor {
+            name: "cancel-test".to_string(),
+            user_id: "user1".to_string(),
+            project_id: "project1".to_string(),
+            command: "python".to_string(),
+            arguments: vec![],
+            environment: HashMap::new(),
+            working_directory: "/app".to_string(),
+            resources: Default::default(),
+            locality: Default::default(),
+            policy: Default::default(),
+            labels: HashMap::new(),
+            annotations: HashMap::new(),
+        };
+        
+        let job = Job::new(descriptor);
+        let job_id = scheduler.submit(job).unwrap();
+        
+        assert_eq!(scheduler.queue_size(), 1);
+        
+        // Cancel the job
+        scheduler.cancel(&job_id, "User requested").unwrap();
+        
+        // Job should be cancelled
+        let job = scheduler.get_job(&job_id).unwrap();
+        assert_eq!(job.state, JobState::Cancelled);
+        
+        // Queue should be empty
+        assert_eq!(scheduler.queue_size(), 0);
+    }
+    
+    #[test]
+    fn test_scheduler_cpu_job() {
+        let registry = Arc::new(NodeRegistry::new(60));
+        registry.register(create_test_node("node-1", 0)).unwrap();
+        
+        let scheduler = Scheduler::new(registry, SchedulerConfig::default());
+        
+        // CPU-only job (gpu_count = 0)
+        let descriptor = JobDescriptor {
+            name: "cpu-job".to_string(),
+            user_id: "user1".to_string(),
+            project_id: "project1".to_string(),
+            command: "python".to_string(),
+            arguments: vec!["preprocess.py".to_string()],
+            environment: HashMap::new(),
+            working_directory: "/app".to_string(),
+            resources: crate::job::ResourceRequirements {
+                gpu_count: 0,
+                cpu_cores: 4,
+                ..Default::default()
+            },
+            locality: Default::default(),
+            policy: Default::default(),
+            labels: HashMap::new(),
+            annotations: HashMap::new(),
+        };
+        
+        let job = Job::new(descriptor);
+        let job_id = scheduler.submit(job).unwrap();
+        
+        // Run scheduling
+        let decisions = scheduler.schedule_cycle();
+        
+        assert_eq!(decisions.len(), 1);
+        assert!(!decisions[0].gang_allocated);
+        
+        let job = scheduler.get_job(&job_id).unwrap();
+        assert_eq!(job.state, JobState::Scheduled);
+    }
+    
+    #[test]
+    fn test_scheduler_gang_scheduling() {
+        let registry = Arc::new(NodeRegistry::new(60));
+        registry.register(create_test_node("node-1", 8)).unwrap();
+        
+        let scheduler = Scheduler::new(registry, SchedulerConfig::default());
+        
+        // Gang job requiring 4 GPUs
+        let descriptor = JobDescriptor {
+            name: "gang-job".to_string(),
+            user_id: "user1".to_string(),
+            project_id: "project1".to_string(),
+            command: "python".to_string(),
+            arguments: vec!["-m", "torch.distributed.launch", "train.py"]
+                .into_iter().map(String::from).collect(),
+            environment: HashMap::new(),
+            working_directory: "/app".to_string(),
+            resources: crate::job::ResourceRequirements {
+                gpu_count: 4,
+                ..Default::default()
+            },
+            locality: Default::default(),
+            policy: crate::job::SchedulingPolicy {
+                gang_schedule: true,
+                priority: 100,
+                ..Default::default()
+            },
+            labels: HashMap::new(),
+            annotations: HashMap::new(),
+        };
+        
+        let job = Job::new(descriptor);
+        scheduler.submit(job).unwrap();
+        
+        // Run scheduling
+        let decisions = scheduler.schedule_cycle();
+        
+        assert_eq!(decisions.len(), 1);
+        assert!(decisions[0].gang_allocated);
+        
+        // Verify 4 GPUs allocated
+        let total_gpus: usize = decisions[0].allocations.values()
+            .map(|v| v.len())
+            .sum();
+        assert_eq!(total_gpus, 4);
+    }
+    
+    #[test]
+    fn test_scheduler_priority_ordering() {
+        let registry = Arc::new(NodeRegistry::new(60));
+        registry.register(create_test_node("node-1", 4)).unwrap();
+        
+        let scheduler = Scheduler::new(registry, SchedulerConfig::default());
+        
+        // Submit low priority job first
+        let low_job = Job::new(JobDescriptor {
+            name: "low-priority".to_string(),
+            user_id: "user1".to_string(),
+            project_id: "project1".to_string(),
+            command: "echo".to_string(),
+            arguments: vec!["low".to_string()],
+            environment: HashMap::new(),
+            working_directory: "/app".to_string(),
+            resources: crate::job::ResourceRequirements {
+                gpu_count: 1,
+                ..Default::default()
+            },
+            locality: Default::default(),
+            policy: crate::job::SchedulingPolicy {
+                priority: 10,  // Low priority
+                ..Default::default()
+            },
+            labels: HashMap::new(),
+            annotations: HashMap::new(),
+        });
+        scheduler.submit(low_job).unwrap();
+        
+        // Submit high priority job second
+        let high_job = Job::new(JobDescriptor {
+            name: "high-priority".to_string(),
+            user_id: "user1".to_string(),
+            project_id: "project1".to_string(),
+            command: "echo".to_string(),
+            arguments: vec!["high".to_string()],
+            environment: HashMap::new(),
+            working_directory: "/app".to_string(),
+            resources: crate::job::ResourceRequirements {
+                gpu_count: 1,
+                ..Default::default()
+            },
+            locality: Default::default(),
+            policy: crate::job::SchedulingPolicy {
+                priority: 100,  // High priority
+                ..Default::default()
+            },
+            labels: HashMap::new(),
+            annotations: HashMap::new(),
+        });
+        scheduler.submit(high_job).unwrap();
+        
+        assert_eq!(scheduler.queue_size(), 2);
+        
+        // Run scheduling cycle
+        let decisions = scheduler.schedule_cycle();
+        
+        // Both jobs should be scheduled (enough resources)
+        assert_eq!(decisions.len(), 2);
+        assert_eq!(scheduler.queue_size(), 0);
+        
+        // Verify both jobs are in Scheduled state
+        for decision in &decisions {
+            let job = scheduler.get_job(&decision.job_id).unwrap();
+            assert_eq!(job.state, JobState::Scheduled);
+        }
+    }
+    
+    #[test]
+    fn test_scheduler_job_lifecycle() {
+        let registry = Arc::new(NodeRegistry::new(60));
+        registry.register(create_test_node("node-1", 4)).unwrap();
+        
+        let scheduler = Scheduler::new(registry, SchedulerConfig::default());
+        
+        let job = Job::new(JobDescriptor {
+            name: "lifecycle-test".to_string(),
+            user_id: "user1".to_string(),
+            project_id: "project1".to_string(),
+            command: "python".to_string(),
+            arguments: vec!["train.py".to_string()],
+            environment: HashMap::new(),
+            working_directory: "/app".to_string(),
+            resources: crate::job::ResourceRequirements {
+                gpu_count: 2,
+                ..Default::default()
+            },
+            locality: Default::default(),
+            policy: Default::default(),
+            labels: HashMap::new(),
+            annotations: HashMap::new(),
+        });
+        
+        let job_id = scheduler.submit(job).unwrap();
+        
+        // Initial state: Queued
+        let job = scheduler.get_job(&job_id).unwrap();
+        assert_eq!(job.state, JobState::Queued);
+        
+        // After scheduling: Scheduled
+        scheduler.schedule_cycle();
+        let job = scheduler.get_job(&job_id).unwrap();
+        assert_eq!(job.state, JobState::Scheduled);
+        
+        // After starting: Running
+        scheduler.mark_job_started(&job_id).unwrap();
+        let job = scheduler.get_job(&job_id).unwrap();
+        assert_eq!(job.state, JobState::Running);
+        assert!(job.start_time.is_some());
+        
+        // After completing: Completed
+        scheduler.mark_job_completed(&job_id, true, "Training finished").unwrap();
+        let job = scheduler.get_job(&job_id).unwrap();
+        assert_eq!(job.state, JobState::Completed);
+        assert!(job.end_time.is_some());
+    }
+    
+    #[test]
+    fn test_scheduler_insufficient_resources() {
+        let registry = Arc::new(NodeRegistry::new(60));
+        registry.register(create_test_node("node-1", 2)).unwrap();
+        
+        let scheduler = Scheduler::new(registry, SchedulerConfig::default());
+        
+        // Job requiring more GPUs than available
+        let job = Job::new(JobDescriptor {
+            name: "large-job".to_string(),
+            user_id: "user1".to_string(),
+            project_id: "project1".to_string(),
+            command: "python".to_string(),
+            arguments: vec![],
+            environment: HashMap::new(),
+            working_directory: "/app".to_string(),
+            resources: crate::job::ResourceRequirements {
+                gpu_count: 8,  // Need 8 but only 2 available
+                ..Default::default()
+            },
+            locality: Default::default(),
+            policy: Default::default(),
+            labels: HashMap::new(),
+            annotations: HashMap::new(),
+        });
+        
+        scheduler.submit(job).unwrap();
+        
+        // Run scheduling - should not schedule due to insufficient resources
+        let decisions = scheduler.schedule_cycle();
+        
+        assert_eq!(decisions.len(), 0);  // Not scheduled
+        assert_eq!(scheduler.queue_size(), 1);  // Still in queue
     }
 }
+

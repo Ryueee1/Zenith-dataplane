@@ -117,80 +117,23 @@ def info():
 
 
 # ============================================================================
-# Job scheduling (SLURM alternative) - coming soon
+# Job scheduling (integrated with Rust scheduler)
 # ============================================================================
 
-def job(gpus=1, memory="8GB", timeout="1h", **kwargs):
-    """
-    Decorator to mark a function as a Zenith job.
-    
-    This is a simpler alternative to SLURM for ML workloads.
-    
-    Args:
-        gpus: Number of GPUs required
-        memory: Memory requirement (e.g., "16GB")
-        timeout: Maximum runtime (e.g., "2h", "1d")
-        **kwargs: Additional job options
-        
-    Example:
-        >>> @zenith.job(gpus=4, memory="32GB")
-        ... def train_model():
-        ...     model = MyModel()
-        ...     model.fit(data)
-        
-        >>> zenith.submit(train_model)
-    """
-    def decorator(func):
-        func._zenith_job = {
-            "gpus": gpus,
-            "memory": memory,
-            "timeout": timeout,
-            **kwargs
-        }
-        return func
-    return decorator
-
-
-def submit(func, *args, **kwargs):
-    """
-    Submit a job for execution.
-    
-    Args:
-        func: A function decorated with @zenith.job
-        *args: Arguments to pass to the function
-        **kwargs: Keyword arguments to pass
-        
-    Returns:
-        Job ID for tracking
-        
-    Example:
-        >>> job_id = zenith.submit(train_model, epochs=100)
-        >>> zenith.status(job_id)
-    """
-    if not hasattr(func, '_zenith_job'):
-        raise ValueError(
-            f"Function {func.__name__} is not a Zenith job. "
-            "Decorate it with @zenith.job() first."
-        )
-    
-    # TODO: Implement actual job submission
-    job_config = func._zenith_job
-    print(f"[zenith] Submitting job: {func.__name__}")
-    print(f"[zenith] Config: GPUs={job_config['gpus']}, Memory={job_config['memory']}")
-    
-    # For now, just run locally
-    return func(*args, **kwargs)
-
-
-def status(job_id=None):
-    """
-    Check status of running jobs.
-    
-    Args:
-        job_id: Specific job to check (None = all jobs)
-    """
-    # TODO: Implement job status checking
-    print("[zenith] No jobs running (scheduler not yet implemented)")
+# Import from scheduler module
+from zenith.scheduler import (
+    job,
+    submit,
+    status,
+    cancel,
+    cluster_info,
+    SchedulerClient,
+    JobConfig,
+    Job as SchedulerJob,
+    JobState,
+    ClusterStatus,
+    set_scheduler_url,
+)
 
 
 # ============================================================================
@@ -226,8 +169,17 @@ __all__ = [
     "job",
     "submit", 
     "status",
+    "cancel",
+    "cluster_info",
+    "SchedulerClient",
+    "JobConfig",
+    "SchedulerJob",
+    "JobState",
+    "ClusterStatus",
+    "set_scheduler_url",
     
     # Metadata
     "__version__",
     "native_available",
 ]
+
