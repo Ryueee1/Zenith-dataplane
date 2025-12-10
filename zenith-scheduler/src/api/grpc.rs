@@ -165,10 +165,17 @@ impl SchedulerService {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::scheduler::SchedulerConfig;
     
-    #[test]
-    fn test_submit_request() {
-        let request = SubmitJobRequest {
+    // Helper to create test state
+    fn create_test_service() -> SchedulerService {
+        let node_registry = Arc::new(NodeRegistry::new(60)); // 60s heartbeat timeout
+        let scheduler = Arc::new(Scheduler::new(node_registry.clone(), SchedulerConfig::default()));
+        SchedulerService::new(scheduler, node_registry)
+    }
+    
+    fn create_test_request() -> SubmitJobRequest {
+        SubmitJobRequest {
             name: "test-job".to_string(),
             user_id: "user1".to_string(),
             project_id: "project1".to_string(),
@@ -181,8 +188,286 @@ mod tests {
             memory_mb: 16384,
             priority: 50,
             gang_schedule: true,
+        }
+    }
+    
+    // ===================== Struct Tests =====================
+    
+    #[test]
+    fn test_submit_request_creation() {
+        let request = create_test_request();
+        assert_eq!(request.name, "test-job");
+        assert_eq!(request.user_id, "user1");
+        assert_eq!(request.project_id, "project1");
+        assert_eq!(request.command, "python");
+        assert_eq!(request.arguments.len(), 1);
+        assert_eq!(request.gpu_count, 4);
+        assert_eq!(request.cpu_cores, 8);
+        assert_eq!(request.memory_mb, 16384);
+        assert_eq!(request.priority, 50);
+        assert!(request.gang_schedule);
+    }
+    
+    #[test]
+    fn test_submit_request_with_environment() {
+        let mut env = HashMap::new();
+        env.insert("CUDA_VISIBLE_DEVICES".to_string(), "0,1".to_string());
+        
+        let request = SubmitJobRequest {
+            name: "env-job".to_string(),
+            user_id: "user1".to_string(),
+            project_id: "project1".to_string(),
+            command: "python".to_string(),
+            arguments: vec![],
+            environment: env.clone(),
+            working_directory: "/app".to_string(),
+            gpu_count: 2,
+            cpu_cores: 4,
+            memory_mb: 8192,
+            priority: 100,
+            gang_schedule: false,
         };
         
-        assert_eq!(request.gpu_count, 4);
+        assert_eq!(request.environment.get("CUDA_VISIBLE_DEVICES"), Some(&"0,1".to_string()));
+    }
+    
+    #[test]
+    fn test_submit_response_creation() {
+        let response = SubmitJobResponse {
+            job_id: "job-123".to_string(),
+            status: "QUEUED".to_string(),
+        };
+        assert_eq!(response.job_id, "job-123");
+        assert_eq!(response.status, "QUEUED");
+    }
+    
+    #[test]
+    fn test_get_job_status_request() {
+        let request = GetJobStatusRequest {
+            job_id: "job-456".to_string(),
+        };
+        assert_eq!(request.job_id, "job-456");
+    }
+    
+    #[test]
+    fn test_get_job_status_response() {
+        let response = GetJobStatusResponse {
+            job_id: "job-789".to_string(),
+            state: "Running".to_string(),
+            message: "Job is running".to_string(),
+            allocated_nodes: vec!["node1".to_string(), "node2".to_string()],
+        };
+        assert_eq!(response.job_id, "job-789");
+        assert_eq!(response.state, "Running");
+        assert_eq!(response.allocated_nodes.len(), 2);
+    }
+    
+    #[test]
+    fn test_cancel_job_request() {
+        let request = CancelJobRequest {
+            job_id: "job-to-cancel".to_string(),
+            reason: "User requested".to_string(),
+        };
+        assert_eq!(request.job_id, "job-to-cancel");
+        assert_eq!(request.reason, "User requested");
+    }
+    
+    #[test]
+    fn test_cancel_job_response_success() {
+        let response = CancelJobResponse {
+            success: true,
+            message: "Job cancelled".to_string(),
+        };
+        assert!(response.success);
+        assert_eq!(response.message, "Job cancelled");
+    }
+    
+    #[test]
+    fn test_cancel_job_response_failure() {
+        let response = CancelJobResponse {
+            success: false,
+            message: "Job not found".to_string(),
+        };
+        assert!(!response.success);
+    }
+    
+    #[test]
+    fn test_cluster_status_response() {
+        let response = ClusterStatusResponse {
+            total_nodes: 10,
+            healthy_nodes: 8,
+            total_gpus: 80,
+            available_gpus: 40,
+            running_jobs: 5,
+            queued_jobs: 10,
+        };
+        assert_eq!(response.total_nodes, 10);
+        assert_eq!(response.healthy_nodes, 8);
+        assert_eq!(response.total_gpus, 80);
+        assert_eq!(response.available_gpus, 40);
+        assert_eq!(response.running_jobs, 5);
+        assert_eq!(response.queued_jobs, 10);
+    }
+    
+    // ===================== Service Tests =====================
+    
+    #[test]
+    fn test_scheduler_service_creation() {
+        let service = create_test_service();
+        // Service should be created without panic
+        let status = service.get_cluster_status();
+        assert_eq!(status.total_nodes, 0);
+        assert_eq!(status.queued_jobs, 0);
+    }
+    
+    #[test]
+    fn test_submit_job_success() {
+        let service = create_test_service();
+        let request = create_test_request();
+        
+        let result = service.submit_job(request);
+        assert!(result.is_ok());
+        
+        let response = result.unwrap();
+        assert!(!response.job_id.is_empty());
+        assert_eq!(response.status, "QUEUED");
+    }
+    
+    #[test]
+    fn test_submit_multiple_jobs() {
+        let service = create_test_service();
+        
+        for i in 0..5 {
+            let mut request = create_test_request();
+            request.name = format!("job-{}", i);
+            
+            let result = service.submit_job(request);
+            assert!(result.is_ok());
+        }
+        
+        let status = service.get_cluster_status();
+        assert_eq!(status.queued_jobs, 5);
+    }
+    
+    #[test]
+    fn test_get_job_status_not_found() {
+        let service = create_test_service();
+        let request = GetJobStatusRequest {
+            job_id: "non-existent-job".to_string(),
+        };
+        
+        let result = service.get_job_status(request);
+        assert!(result.is_err());
+    }
+    
+    #[test]
+    fn test_get_job_status_after_submit() {
+        let service = create_test_service();
+        
+        // Submit a job first
+        let submit_request = create_test_request();
+        let submit_result = service.submit_job(submit_request);
+        assert!(submit_result.is_ok());
+        let job_id = submit_result.unwrap().job_id;
+        
+        // Now get its status
+        let status_request = GetJobStatusRequest {
+            job_id: job_id.clone(),
+        };
+        let status_result = service.get_job_status(status_request);
+        assert!(status_result.is_ok());
+        
+        let status = status_result.unwrap();
+        assert_eq!(status.job_id, job_id);
+    }
+    
+    #[test]
+    fn test_cancel_job_not_found() {
+        let service = create_test_service();
+        let request = CancelJobRequest {
+            job_id: "non-existent-job".to_string(),
+            reason: "Test".to_string(),
+        };
+        
+        let result = service.cancel_job(request);
+        assert!(result.is_err());
+    }
+    
+    #[test]
+    fn test_get_cluster_status_empty() {
+        let service = create_test_service();
+        let status = service.get_cluster_status();
+        
+        assert_eq!(status.total_nodes, 0);
+        assert_eq!(status.healthy_nodes, 0);
+        assert_eq!(status.total_gpus, 0);
+        assert_eq!(status.available_gpus, 0);
+        assert_eq!(status.running_jobs, 0);
+        assert_eq!(status.queued_jobs, 0);
+    }
+    
+    // ===================== Clone Tests =====================
+    
+    #[test]
+    fn test_submit_request_clone() {
+        let request = create_test_request();
+        let cloned = request.clone();
+        
+        assert_eq!(request.name, cloned.name);
+        assert_eq!(request.gpu_count, cloned.gpu_count);
+    }
+    
+    #[test]
+    fn test_response_structs_clone() {
+        let submit_resp = SubmitJobResponse {
+            job_id: "job-1".to_string(),
+            status: "OK".to_string(),
+        };
+        let cloned = submit_resp.clone();
+        assert_eq!(submit_resp.job_id, cloned.job_id);
+        
+        let status_resp = GetJobStatusResponse {
+            job_id: "job-1".to_string(),
+            state: "Running".to_string(),
+            message: "OK".to_string(),
+            allocated_nodes: vec![],
+        };
+        let cloned = status_resp.clone();
+        assert_eq!(status_resp.state, cloned.state);
+        
+        let cancel_resp = CancelJobResponse {
+            success: true,
+            message: "Done".to_string(),
+        };
+        let cloned = cancel_resp.clone();
+        assert_eq!(cancel_resp.success, cloned.success);
+        
+        let cluster_resp = ClusterStatusResponse {
+            total_nodes: 1,
+            healthy_nodes: 1,
+            total_gpus: 4,
+            available_gpus: 2,
+            running_jobs: 1,
+            queued_jobs: 0,
+        };
+        let cloned = cluster_resp.clone();
+        assert_eq!(cluster_resp.total_gpus, cloned.total_gpus);
+    }
+    
+    // ===================== Debug Tests =====================
+    
+    #[test]
+    fn test_debug_implementations() {
+        let request = create_test_request();
+        let debug_str = format!("{:?}", request);
+        assert!(debug_str.contains("SubmitJobRequest"));
+        assert!(debug_str.contains("test-job"));
+        
+        let response = SubmitJobResponse {
+            job_id: "j1".to_string(),
+            status: "OK".to_string(),
+        };
+        let debug_str = format!("{:?}", response);
+        assert!(debug_str.contains("SubmitJobResponse"));
     }
 }

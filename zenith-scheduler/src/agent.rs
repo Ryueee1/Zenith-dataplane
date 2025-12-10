@@ -225,10 +225,277 @@ impl NodeAgent {
 mod tests {
     use super::*;
     
+    // ===================== Config Tests =====================
+    
     #[test]
     fn test_default_config() {
         let config = NodeAgentConfig::default();
         assert!(!config.node_id.is_empty());
         assert_eq!(config.heartbeat_interval_secs, 30);
+        assert_eq!(config.gpu_monitor_interval_secs, 10);
+        assert_eq!(config.scheduler_addr, "http://localhost:50051");
+    }
+    
+    #[test]
+    fn test_config_custom() {
+        let config = NodeAgentConfig {
+            node_id: "custom-node".to_string(),
+            scheduler_addr: "http://scheduler:50051".to_string(),
+            heartbeat_interval_secs: 60,
+            gpu_monitor_interval_secs: 30,
+        };
+        
+        assert_eq!(config.node_id, "custom-node");
+        assert_eq!(config.scheduler_addr, "http://scheduler:50051");
+        assert_eq!(config.heartbeat_interval_secs, 60);
+        assert_eq!(config.gpu_monitor_interval_secs, 30);
+    }
+    
+    #[test]
+    fn test_config_clone() {
+        let config = NodeAgentConfig::default();
+        let cloned = config.clone();
+        
+        assert_eq!(config.node_id, cloned.node_id);
+        assert_eq!(config.scheduler_addr, cloned.scheduler_addr);
+        assert_eq!(config.heartbeat_interval_secs, cloned.heartbeat_interval_secs);
+    }
+    
+    #[test]
+    fn test_config_debug() {
+        let config = NodeAgentConfig::default();
+        let debug_str = format!("{:?}", config);
+        assert!(debug_str.contains("NodeAgentConfig"));
+        assert!(debug_str.contains("node_id"));
+    }
+    
+    #[test]
+    fn test_config_serialize() {
+        let config = NodeAgentConfig {
+            node_id: "test-node".to_string(),
+            scheduler_addr: "http://localhost:50051".to_string(),
+            heartbeat_interval_secs: 30,
+            gpu_monitor_interval_secs: 10,
+        };
+        
+        let json = serde_json::to_string(&config).unwrap();
+        assert!(json.contains("test-node"));
+        assert!(json.contains("50051"));
+    }
+    
+    #[test]
+    fn test_config_deserialize() {
+        let json = r#"{
+            "node_id": "json-node",
+            "scheduler_addr": "http://sched:8080",
+            "heartbeat_interval_secs": 45,
+            "gpu_monitor_interval_secs": 15
+        }"#;
+        
+        let config: NodeAgentConfig = serde_json::from_str(json).unwrap();
+        assert_eq!(config.node_id, "json-node");
+        assert_eq!(config.scheduler_addr, "http://sched:8080");
+        assert_eq!(config.heartbeat_interval_secs, 45);
+    }
+    
+    // ===================== GPU Parsing Tests =====================
+    
+    #[test]
+    fn test_parse_gpu_line_valid() {
+        let line = "0, NVIDIA A100, GPU-abc123, 40960, 35000, 25, 45";
+        let gpu = NodeAgent::parse_gpu_line(line);
+        
+        assert!(gpu.is_some());
+        let gpu = gpu.unwrap();
+        assert_eq!(gpu.device_id, "cuda:0");
+        assert_eq!(gpu.device_name, "NVIDIA A100");
+        assert_eq!(gpu.uuid, "GPU-abc123");
+        assert_eq!(gpu.total_memory, 40960 * 1024 * 1024);
+        assert_eq!(gpu.free_memory, 35000 * 1024 * 1024);
+        assert!((gpu.utilization - 0.25).abs() < 0.01);
+        assert_eq!(gpu.temperature, 45);
+        assert!(!gpu.allocated);
+        assert!(gpu.allocated_job_id.is_none());
+    }
+    
+    #[test]
+    fn test_parse_gpu_line_h100() {
+        let line = "1, NVIDIA H100 80GB HBM3, GPU-h100-xyz, 81920, 80000, 5, 38";
+        let gpu = NodeAgent::parse_gpu_line(line);
+        
+        assert!(gpu.is_some());
+        let gpu = gpu.unwrap();
+        assert_eq!(gpu.device_id, "cuda:1");
+        assert!(gpu.device_name.contains("H100"));
+    }
+    
+    #[test]
+    fn test_parse_gpu_line_invalid_short() {
+        let line = "0, NVIDIA A100";  // Too few fields
+        let gpu = NodeAgent::parse_gpu_line(line);
+        assert!(gpu.is_none());
+    }
+    
+    #[test]
+    fn test_parse_gpu_line_empty() {
+        let line = "";
+        let gpu = NodeAgent::parse_gpu_line(line);
+        assert!(gpu.is_none());
+    }
+    
+    #[test]
+    fn test_parse_gpu_line_invalid_numbers() {
+        let line = "0, GPU, uuid, invalid, 35000, 25, 45";
+        let gpu = NodeAgent::parse_gpu_line(line);
+        
+        // Should still parse, but with 0 for invalid numeric fields
+        assert!(gpu.is_some());
+        let gpu = gpu.unwrap();
+        assert_eq!(gpu.total_memory, 0);  // "invalid" parsed as 0
+    }
+    
+    #[test]
+    fn test_parse_gpu_line_whitespace() {
+        let line = "  0  ,  NVIDIA A100  ,  GPU-123  ,  40960  ,  30000  ,  50  ,  60  ";
+        let gpu = NodeAgent::parse_gpu_line(line);
+        
+        assert!(gpu.is_some());
+        let gpu = gpu.unwrap();
+        assert_eq!(gpu.device_id, "cuda:0");
+        assert_eq!(gpu.device_name, "NVIDIA A100");
+    }
+    
+    // ===================== Detection Tests =====================
+    
+    #[test]
+    fn test_detect_numa_nodes() {
+        // This will return at least 1 on any Linux system
+        let numa_count = NodeAgent::detect_numa_nodes();
+        assert!(numa_count >= 1);
+    }
+    
+    #[test]
+    fn test_detect_rdma() {
+        // Just verify it doesn't panic
+        let _rdma = NodeAgent::detect_rdma();
+        // Most systems don't have RDMA, so we just check it returns a bool
+    }
+    
+    #[test]
+    fn test_get_ip_address() {
+        let ip = NodeAgent::get_ip_address();
+        // Should return a valid IP string
+        assert!(!ip.is_empty());
+        // Either loopback or a real IP
+        assert!(ip == "127.0.0.1" || ip.contains('.') || ip.contains(':'));
+    }
+    
+    #[test]
+    fn test_discover_gpus() {
+        // On systems without nvidia-smi, this should return empty
+        let gpus = NodeAgent::discover_gpus();
+        // Just verify it doesn't panic
+        assert!(gpus.len() >= 0);  // Always true, but verifies return type
+    }
+    
+    // ===================== Node Agent Tests =====================
+    
+    #[test]
+    fn test_node_agent_creation() {
+        let config = NodeAgentConfig {
+            node_id: "test-agent".to_string(),
+            scheduler_addr: "http://localhost:50051".to_string(),
+            heartbeat_interval_secs: 30,
+            gpu_monitor_interval_secs: 10,
+        };
+        
+        let agent = NodeAgent::new(config);
+        assert!(agent.is_ok());
+        
+        let agent = agent.unwrap();
+        let status = agent.status();
+        assert_eq!(status.id, "test-agent");
+    }
+    
+    #[test]
+    fn test_node_agent_stop() {
+        let config = NodeAgentConfig::default();
+        let mut agent = NodeAgent::new(config).unwrap();
+        
+        // Initially not running
+        assert!(!agent.running);
+        
+        // Stop (even when not started)
+        agent.stop();
+        assert!(!agent.running);
+    }
+    
+    #[test]
+    fn test_node_agent_status() {
+        let config = NodeAgentConfig {
+            node_id: "status-test".to_string(),
+            scheduler_addr: "http://localhost:50051".to_string(),
+            heartbeat_interval_secs: 30,
+            gpu_monitor_interval_secs: 10,
+        };
+        
+        let agent = NodeAgent::new(config).unwrap();
+        let status = agent.status();
+        
+        assert_eq!(status.id, "status-test");
+        assert!(status.topology.cpu_cores > 0);
+        assert!(status.topology.cpu_memory > 0);
+    }
+    
+    #[test]
+    fn test_discover_topology() {
+        let topology = NodeAgent::discover_topology();
+        assert!(topology.is_ok());
+        
+        let topology = topology.unwrap();
+        assert!(topology.cpu_cores > 0);
+        assert!(topology.cpu_memory > 0);
+        assert!(topology.numa_nodes >= 1);
+    }
+    
+    // ===================== Integration Tests =====================
+    
+    #[test]
+    fn test_multiple_gpu_lines() {
+        let lines = vec![
+            "0, NVIDIA A100, GPU-0, 40960, 40000, 10, 40",
+            "1, NVIDIA A100, GPU-1, 40960, 35000, 30, 45",
+            "2, NVIDIA A100, GPU-2, 40960, 30000, 50, 50",
+            "3, NVIDIA A100, GPU-3, 40960, 25000, 70, 55",
+        ];
+        
+        let gpus: Vec<GpuDevice> = lines.iter()
+            .filter_map(|l| NodeAgent::parse_gpu_line(l))
+            .collect();
+        
+        assert_eq!(gpus.len(), 4);
+        
+        for (i, gpu) in gpus.iter().enumerate() {
+            assert_eq!(gpu.device_id, format!("cuda:{}", i));
+        }
+    }
+    
+    #[test]
+    fn test_config_roundtrip() {
+        let original = NodeAgentConfig {
+            node_id: "roundtrip-node".to_string(),
+            scheduler_addr: "http://sched:9090".to_string(),
+            heartbeat_interval_secs: 120,
+            gpu_monitor_interval_secs: 60,
+        };
+        
+        let json = serde_json::to_string(&original).unwrap();
+        let restored: NodeAgentConfig = serde_json::from_str(&json).unwrap();
+        
+        assert_eq!(original.node_id, restored.node_id);
+        assert_eq!(original.scheduler_addr, restored.scheduler_addr);
+        assert_eq!(original.heartbeat_interval_secs, restored.heartbeat_interval_secs);
+        assert_eq!(original.gpu_monitor_interval_secs, restored.gpu_monitor_interval_secs);
     }
 }
+
