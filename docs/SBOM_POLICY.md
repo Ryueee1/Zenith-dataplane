@@ -20,14 +20,14 @@ We use **CycloneDX v1.5** format for all SBOMs:
 
 ## Generated SBOMs
 
-| Component | SBOM File | 
-|-----------|-----------|
-| zenith-core | `sbom/zenith-core.cdx.json` |
+| Component          | SBOM File                          | 
+|--------------------|------------------------------------|
+| zenith-core        | `sbom/zenith-core.cdx.json`        |
 | zenith-runtime-cpu | `sbom/zenith-runtime-cpu.cdx.json` |
 | zenith-runtime-gpu | `sbom/zenith-runtime-gpu.cdx.json` |
-| zenith-scheduler | `sbom/zenith-scheduler.cdx.json` |
-| zenith-dataplane | `sbom/zenith-dataplane.cdx.json` |
-| + 8 more modules | `sbom/*.cdx.json` |
+| zenith-scheduler   | `sbom/zenith-scheduler.cdx.json`   | 
+| zenith-dataplane   | `sbom/zenith-dataplane.cdx.json`   |
+| + 8 more modules   | `sbom/*.cdx.json`                  |
 
 ## Generation Process
 
@@ -79,12 +79,12 @@ trivy sbom sbom/zenith-core.cdx.json
 
 Our SBOM policy supports **SLSA Level 4**:
 
-| Requirement | Implementation |
-|-------------|----------------|
-| Source integrity | Git with signed commits |
-| Build integrity | GitHub Actions (hermetic) |
-| Provenance | SLSA attestation |
-| Dependencies | SBOM with all deps |
+| Requirement      | Implementation            |
+|------------------|---------------------------|
+| Source integrity | Git with signed commits   |
+| Build integrity  | GitHub Actions (hermetic) |
+| Provenance       | SLSA attestation          |
+| Dependencies     | SBOM with all deps        |
 
 ## Dependency Updates
 

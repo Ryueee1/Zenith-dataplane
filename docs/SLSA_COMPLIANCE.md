@@ -13,12 +13,12 @@
 
 ## SLSA Levels
 
-| Level | Requirements | Zenith Status |
-|-------|--------------|---------------|
-| **Level 1** | Documentation of build process | ✅ Implemented |
-| **Level 2** | Tamper resistance of build service | ✅ Implemented |
-| **Level 3** | Hardened builds, signed provenance | ✅ Implemented |
-| **Level 4** | Two-person review, hermetic builds | ✅ Implemented |
+| Level         | Requirements                          | Zenith Status  |
+|---------------|---------------------------------------|----------------|
+| **Level 1**   | Documentation of build process        | ✅ Implemented |
+| **Level 2**   | Tamper resistance of build service    | ✅ Implemented |
+| **Level 3**   | Hardened builds, signed provenance    | ✅ Implemented |
+| **Level 4**   | Two-person review, hermetic builds    | ✅ Implemented |
 
 ## Level 4 Implementation Details
 
@@ -114,12 +114,12 @@ See `.github/workflows/slsa-release.yml` for the complete implementation.
 
 ## Compliance Audit
 
-| Check | Tool | Frequency |
-|-------|------|-----------|
-| Dependency vulnerabilities | cargo-audit | Every build |
-| SBOM vulnerabilities | Grype | Every release |
-| License compliance | cargo-deny | Every build |
-| SLSA provenance | slsa-verifier | Every release |
+| Check                      | Tool          | Frequency     |
+|----------------------------|---------------|---------------|
+| Dependency vulnerabilities | cargo-audit   | Every build   |
+| SBOM vulnerabilities       | Grype         | Every release |
+| License compliance         | cargo-deny    | Every build   |
+| SLSA provenance            | slsa-verifier | Every release |
 
 ## References
 

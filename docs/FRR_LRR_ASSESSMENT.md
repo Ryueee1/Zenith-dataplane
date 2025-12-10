@@ -23,25 +23,25 @@
 ```
 ### Progress Summary
 
-| Priority | Items | Completed | Remaining |
-|----------|-------|-----------|-----------|
-| P0 Critical | 3 | 3 [OK] | 0 |
-| P1 Stabilization | 4 | 3 [OK] | 1 |
-| P2 Hardening | 4 | 0 | 4 |
+| Priority         | Items | Completed | Remaining |
+|------------------|-------|-----------|-----------|
+| P0 Critical      | 3     | 3 [OK]    | 0         |
+| P1 Stabilization | 4     | 3 [OK]    | 1         |
+| P2 Hardening     | 4     | 0         | 4         |
 ---
 ## SECTION 1 – QUALITY ENGINEERING ARTIFACTS (FRR-01)
 
-| Item | Status | Evidence | CAT |
-|------|--------|----------|-----|
-| SBOM lengkap dan tervalidasi | [OK] **PASS** | `docs/SBOM.json` (579KB) | CAT I |
-| Dependency:tree mismatch ≤ 5% | [OK] PASS | Tree verified via `cargo tree` | CAT I |
-| CI logs lengkap | [OK] PASS | `.github/workflows/ci.yml` | CAT II |
-| Unit/Integration/E2E Test reports | [OK] **PASS** | 109/109 tests pass | CAT I |
-| Mutation tests ≥ 90% / 98% kritikal | [OK] PASS | 88.2% (documented) | CAT I |
-| Coverage report lengkap | [!] PARTIAL | Code coverage not generated | CAT III |
-| Reproducible build logs | [!] PARTIAL | SHA256 checksums available | CAT I |
-| Fuzz logs tersedia | [FAIL] MISSING | No fuzz tests found | CAT II |
-| Benchmark & profiling logs | [OK] PASS | `BENCHMARK_REPORT.md` exists | CAT III |
+| Item                                  | Status           | Evidence                       | CAT     |
+|---------------------------------------|------------------|--------------------------------|---------|
+| SBOM lengkap dan tervalidasi          | [OK] **PASS**    | `docs/SBOM.json` (579KB)       | CAT I   |
+| Dependency:tree mismatch ≤ 5%         | [OK] PASS        | Tree verified via `cargo tree` | CAT I   |
+| CI logs lengkap                       | [OK] PASS        | `.github/workflows/ci.yml`     | CAT II  |
+| Unit/Integration/E2E Test reports     | [OK] **PASS**    | 109/109 tests pass             | CAT I   |
+| Mutation tests ≥ 90% / 98% kritikal   | [OK] PASS        | 88.2% (documented)             | CAT I   |
+| Coverage report lengkap               | [!] PARTIAL      | Code coverage not generated    | CAT III |
+| Reproducible build logs               | [!] PARTIAL      | SHA256 checksums available     | CAT I   |
+| Fuzz logs tersedia                    | [FAIL] MISSING   | No fuzz tests found            | CAT II  |
+| Benchmark & profiling logs            | [OK] PASS        | `BENCHMARK_REPORT.md` exists   | CAT III |
 ### Evidence Updates:
 **Test Suite: FIXED [OK]**
 ```
@@ -58,16 +58,16 @@ Tool: cargo-sbom v0.10.0
 ### GO / NO-GO: **CONDITIONAL GO** (Minor items remaining)
 ---
 ## SECTION 2 – SECURITY & VULNERABILITY CLEARANCE (FRR-02)
-
-| Item | Status | Evidence | CAT |
-|------|--------|----------|-----|
-| OWASP/NVD scan berhasil | [OK] PASS | `cargo audit` executed | CAT I |
-| Tidak ada CVE kritikal | [OK] **PASS** | Critical CVE fixed | CAT I |
-| Tidak ada CVE high tanpa mitigasi | [!] PARTIAL | 3 warnings (unmaintained) | CAT II |
-| Semua library aman & stable | [!] PARTIAL | 3 warnings remaining | CAT II |
-| Secrets/credentials tidak muncul | [OK] PASS | No hardcoded secrets | CAT I |
-| SHA256 integrity diverifikasi | [OK] **PASS** | `docs/CHECKSUMS.txt` | CAT I |
-| Provenance signed & validated | [!] PARTIAL | Signing guide documented | CAT I |
+ 
+| Item                              | Status        | Evidence                  | CAT    |
+|-----------------------------------|---------------|---------------------------|--------|
+| OWASP/NVD scan berhasil           | [OK] PASS     | `cargo audit` executed    | CAT I  |
+| Tidak ada CVE kritikal            | [OK] **PASS** | Critical CVE fixed        | CAT I  |
+| Tidak ada CVE high tanpa mitigasi | [!] PARTIAL   | 3 warnings (unmaintained) | CAT II |
+| Semua library aman & stable       | [!] PARTIAL   | 3 warnings remaining      | CAT II |
+| Secrets/credentials tidak muncul  | [OK] PASS     | No hardcoded secrets      | CAT I  |
+| SHA256 integrity diverifikasi     | [OK] **PASS** | `docs/CHECKSUMS.txt`      | CAT I  |
+| Provenance signed & validated     | [!] PARTIAL   | Signing guide documented  | CAT I  |
 ### Security Fixes Applied:
 **wasmtime Upgrade: [OK]**
 ```
@@ -88,13 +88,13 @@ File: target/release/libzenith_core.so
 ---
 ## SECTION 3 – BUILD & SUPPLY CHAIN ASSURANCE (FRR-03)
 
-| Item | Status | Evidence | CAT |
-|------|--------|----------|-----|
-| Hermetic build (no network) | [FAIL] MISSING | Network access during build | CAT I |
-| Dependency vendored | [FAIL] MISSING | Uses crates.io runtime | CAT I |
-| Reproducible build hashes identik | [!] PARTIAL | SHA256 checksums available | CAT I |
-| Provenance generated | [!] PARTIAL | `docs/ARTIFACT_SIGNING.md` | CAT II |
-| Deterministic build log | [!] PARTIAL | Release build logged | CAT II |
+| Item                              | Status         | Evidence                    | CAT    |
+|-----------------------------------|----------------|-----------------------------|---- ---|
+| Hermetic build (no network)       | [FAIL] MISSING | Network access during build | CAT I  |
+| Dependency vendored               | [FAIL] MISSING | Uses crates.io runtime      | CAT I  |
+| Reproducible build hashes identik | [!] PARTIAL    | SHA256 checksums available  | CAT I  |
+| Provenance generated              | [!] PARTIAL    | `docs/ARTIFACT_SIGNING.md`  | CAT II |
+| Deterministic build log           | [!] PARTIAL    | Release build logged        | CAT II |
 ### New Documentation:
 - `docs/ARTIFACT_SIGNING.md` - Complete signing guide
 - `docs/CHECKSUMS.txt` - SHA256 checksums
@@ -102,13 +102,13 @@ File: target/release/libzenith_core.so
 ---
 ## SECTION 4 – TEST CAMPAIGN VALIDATION (FRR-04)
 
-| Item | Status | Evidence | CAT |
-|------|--------|----------|-----|
-| Unit tests 100% pass | [OK] **PASS** | 109/109 pass | CAT II |
-| Integration tests lulus | [OK] PASS | Integration tests pass | CAT II |
-| E2E scenario mission-critical | [OK] PASS | Jepsen tests pass | CAT I |
-| Mutation score memenuhi ambang | [OK] PASS | 88.2% score | CAT I |
-| MC/DC coverage lengkap | [FAIL] MISSING | Not implemented | CAT I |
+| Item                            | Status        | Evidence                | CAT   |
+|--------------------------------|----------------|-------------------------|-------|
+| Unit tests 100% pass           | [OK] **PASS**  | 109/109 pass            | CAT II|
+| Integration tests lulus        | [OK] PASS      | Integration tests pass  | CAT II|
+| E2E scenario mission-critical  | [OK] PASS      | Jepsen tests pass       | CAT I |
+| Mutation score memenuhi ambang | [OK] PASS      | 88.2% score             | CAT I |
+| MC/DC coverage lengkap         | [FAIL] MISSING | Not implemented         | CAT I |
 ### Test Summary (UPDATED):
 ```
 zenith-core: 17 tests - PASS [OK]
@@ -125,12 +125,12 @@ Pass Rate: 100% [OK]
 ---
 ## SECTION 5 – FORMAL VERIFICATION (FRR-05)
 
-| Item | Status | Evidence | CAT |
-|------|--------|----------|-----|
-| TLA+ specs tersedia | [FAIL] MISSING | No .tla files | CAT I |
-| Model check tanpa invariant violation | [FAIL] N/A | No model to check | CAT I |
-| Coq/Dafny/Isabelle proofs | [FAIL] MISSING | No formal proofs | CAT I |
-| All invariants & safety properties | [!] PARTIAL | Property tests exist | CAT I |
+| Item                                   | Status        | Evidence                | CAT   |
+|---------------------------------------|----------------|-------------------------|-------|
+| TLA+ specs tersedia                   | [FAIL] MISSING | No .tla files           | CAT I |
+| Model check tanpa invariant violation | [FAIL] N/A     | No model to check       | CAT I |
+| Coq/Dafny/Isabelle proofs             | [FAIL] MISSING | No formal proofs        | CAT I |
+| All invariants & safety properties    | [!] PARTIAL    | Property tests exist    | CAT I |
 ### Mitigation:
 - Property-based testing via `proptest` crate in use
 - Formal verification is P2 priority (aerospace/medical use cases)
@@ -138,12 +138,12 @@ Pass Rate: 100% [OK]
 ---
 ## SECTION 6 – DISTRIBUTED SYSTEM CONSISTENCY (FRR-06)
 
-| Item | Status | Evidence | CAT |
-|------|--------|----------|-----|
-| Jepsen topology lengkap | [OK] PASS | 3-node cluster tested | CAT I |
-| Workload test lulus | [OK] PASS | 8/8 operations successful | CAT I |
-| No anomaly: split-brain, lost update | [OK] EXPECTED | By design - no replication | CAT I |
-| Cluster stability terverifikasi | [OK] PASS | Recovery verified | CAT II |
+| Item                                 | Status        | Evidence                   | CAT    |
+|--------------------------------------|---------------|----------------------------|--------|
+| Jepsen topology lengkap              | [OK] PASS     | 3-node cluster tested      | CAT I  |
+| Workload test lulus                  | [OK] PASS     | 8/8 operations successful  | CAT I  |
+| No anomaly: split-brain, lost update | [OK] EXPECTED | By design - no replication | CAT I  |
+| Cluster stability terverifikasi      | [OK] PASS     | Recovery verified          | CAT II |
 ### Jepsen Results: PASS [OK]
 ```
 Connectivity: 6/6 PASS
@@ -158,14 +158,14 @@ Overall: 80% pass rate
 ---
 ## SECTION 7 – STATIC ANALYSIS & CODE QUALITY (FRR-07)
 
-| Item | Status | Evidence | CAT |
-|------|--------|----------|-----|
-| SonarQube scan tanpa blocker | [OK] N/A | Using Clippy | CAT I |
-| Bugs = 0 | [OK] **PASS** | Test bug fixed | CAT II |
-| Vulnerabilities = 0 | [OK] **PASS** | Critical CVE fixed | CAT I |
-| Duplication < 3% | [OK] PASS | No excessive duplication | CAT III |
-| Complexity terkendali | [OK] PASS | Modular architecture | CAT II |
-| Tidak ada code smell mayor | [!] PARTIAL | ~177 clippy warnings (mostly docs) | CAT III |
+| Item                         | Status        | Evidence                           | CAT     |
+|------------------------------|---------------|------------------------------------|---------|
+| SonarQube scan tanpa blocker | [OK] N/A      | Using Clippy                       | CAT I   |
+| Bugs = 0                     | [OK] **PASS** | Test bug fixed                     | CAT II  |
+| Vulnerabilities = 0          | [OK] **PASS** | Critical CVE fixed                 | CAT I   |
+| Duplication < 3%             | [OK] PASS     | No excessive duplication           | CAT III |
+| Complexity terkendali        | [OK] PASS     | Modular architecture               | CAT II  |
+| Tidak ada code smell mayor   | [!] PARTIAL   | ~177 clippy warnings (mostly docs) | CAT III |
 ### Clippy Status (UPDATED):
 ```
 Before: 98 warnings
@@ -178,14 +178,14 @@ After: ~177 warnings (mostly missing documentation)
 ---
 ## SECTION 8 – CI/CD MISSION SAFETY GATES (LRR-01)
 
-| Item | Status | Evidence | CAT |
-|------|--------|----------|-----|
-| Pipeline tanpa internet | [FAIL] MISSING | Uses network | CAT I |
-| Seluruh test suite berjalan | [OK] PASS | CI runs all tests | CAT I |
-| Signing otomatis berhasil | [!] PARTIAL | Guide documented | CAT I |
-| Artefak tersimpan aman | [OK] PASS | GitHub Actions artifacts | CAT II |
-| Rollback plan tersedia | [!] PARTIAL | Git tags available | CAT II |
-| Artefak reproducible | [!] PARTIAL | SHA256 checksums | CAT I |
+| Item                         | Status        | Evidence                           | CAT     |
+|------------------------------|---------------|------------------------------------|---------|
+| Pipeline tanpa internet      | [FAIL] MISSING| Uses network                       | CAT I   |
+| Seluruh test suite berjalan  | [OK] PASS     | CI runs all tests                  | CAT I   |
+| Signing otomatis berhasil    | [!] PARTIAL   | Guide documented                   | CAT I   |
+| Artefak tersimpan aman       | [OK] PASS     | GitHub Actions artifacts           | CAT II  |
+| Rollback plan tersedia       | [!] PARTIAL   | Git tags available                 | CAT II  | 
+| Artefak reproducible         | [!] PARTIAL   | SHA256 checksums                   | CAT I   |
 ### New Artifacts:
 - `docs/ARTIFACT_SIGNING.md` - Sigstore/GPG signing guide
 - `docs/CHECKSUMS.txt` - Build artifact hashes
@@ -194,12 +194,12 @@ After: ~177 warnings (mostly missing documentation)
 ---
 ## SECTION 9 – TRACEABILITY MATRIX (LRR-02)
 
-| Item | Status | Evidence |
-|------|--------|----------|
+| Item                       | Status        | Evidence                      |
+|----------------------------|---------------|-------------------------------|
 | Requirement → Code mapping | [OK] **PASS** | `docs/TRACEABILITY_MATRIX.md` |
-| Code → Test mapping | [OK] **PASS** | 109 tests mapped |
-| No requirement tanpa test | [OK] PASS | All requirements have tests |
-| No test tanpa requirement | [OK] PASS | All tests documented |
+| Code → Test mapping        | [OK] **PASS** | 109 tests mapped              |
+| No requirement tanpa test  | [OK] PASS     | All requirements have tests   |
+| No test tanpa requirement  | [OK] PASS     | All tests documented          |
 ### New Documentation:
 - `docs/TRACEABILITY_MATRIX.md` - Complete RTM
 - 22 Functional Requirements traced
@@ -211,16 +211,16 @@ After: ~177 warnings (mostly missing documentation)
 ## SECTION 10 – FINAL MISSION RISK ASSESSMENT (LRR-03)
 ### Risk Registry (UPDATED):
 
-| ID | Risk | CAT | Status | Mitigation |
-|----|------|-----|--------|------------|
-| R001 | CVE in wasmtime | CAT I | [OK] **CLOSED** | Upgraded to v27.0.0 |
-| R002 | Test failure in logging | CAT II | [OK] **CLOSED** | Fixed race condition |
-| R003 | No formal verification | CAT I | OPEN | P2 - TLA+ roadmap |
-| R004 | No reproducible builds | CAT I | [!] PARTIAL | SHA256 checksums added |
-| R005 | No signing | CAT I | [!] PARTIAL | Signing guide documented |
-| R006 | Clippy warnings | CAT III | [!] PARTIAL | Auto-fix applied |
-| R007 | No SBOM | CAT I | [OK] **CLOSED** | SBOM generated |
-| R008 | No traceability | CAT II | [OK] **CLOSED** | RTM created |
+| ID   | Risk                    | CAT     | Status          | Mitigation               |
+|------|-------------------------|---------|-----------------|--------------------------|
+| R001 | CVE in wasmtime         | CAT I   | [OK] **CLOSED** | Upgraded to v27.0.0      |
+| R002 | Test failure in logging | CAT II  | [OK] **CLOSED** | Fixed race condition     |
+| R003 | No formal verification  | CAT I   | OPEN            | P2 - TLA+ roadmap        |
+| R004 | No reproducible builds  | CAT I   | [!] PARTIAL     | SHA256 checksums added   |
+| R005 | No signing              | CAT I   | [!] PARTIAL     | Signing guide documented |
+| R006 | Clippy warnings         | CAT III | [!] PARTIAL     | Auto-fix applied         |
+| R007 | No SBOM                 | CAT I   | [OK] **CLOSED** | SBOM generated           |
+| R008 | No traceability         | CAT II  | [OK] **CLOSED** | RTM created              | 
 ### Priority Status:
 **P0 - Critical Blockers: [OK] COMPLETE**
 - [x] Fix CVE in wasmtime (upgraded to v27.0.0)
@@ -303,12 +303,12 @@ sha256sum target/release/libzenith_core.so > docs/CHECKSUMS.txt
 ---
 ## APPENDIX C – SIGNATURES
 
-| Role | Name | Date | Signature |
-|------|------|------|-----------|
-| QA Engineer | Wahyu Ardiansyah | 2025-12-10 | [OK] |
-| Security Officer | TBD | | |
-| Tech Lead | TBD | | |
-| Mission Director | TBD | | |
+| Role             | Name | Date | Signature |
+|------------------|------|------|-----------|
+| QA Engineer      | Wahyu Ardiansyah | 2025-12-10 | [OK] |
+| Security Officer | TBD  | TBD  | TBD       |
+| Tech Lead        | TBD  | TBD  | TBD       |
+| Mission Director | TBD  | TBD  | TBD       |
 ---
 **Document Version:** 2.0 
 **Classification:** Internal Use Only 

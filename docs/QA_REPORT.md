@@ -14,11 +14,11 @@ This comprehensive report documents quality testing of the Zenith project includ
 
 ### Current Quality Metrics
 
-| Metric | Current | Q1 2025 Target | Q2 2025 Target |
-|--------|---------|----------------|----------------|
-| **Code Coverage** | 51.24% | 70% | 80% |
-| **Mutation Score** | 40.1% | 55% | 70% |
-| **Test Count** | 88+ | 120 | 150 |
+| Metric             | Current | Q1 2025 Target | Q2 2025 Target |
+|--------------------|---------|----------------|----------------|
+| **Code Coverage**  | 51.24%  | 70%            | 80%            |
+| **Mutation Score** | 40.1%   | 55%            | 70%            |
+| **Test Count**     | 88+     | 120            | 150            |
 
 ### Quality Progress
 
@@ -34,64 +34,64 @@ Tests:     ████████████████████░░░
 
 ### 1.1 Overall Results
 
-| Metric | Value |
-|--------|-------|
-| **Total Coverage** | 51.24% |
-| **Lines Covered** | 1,161 |
-| **Lines Total** | 2,266 |
+| Metric            | Value      |
+|-------------------|------------|
+| **Total Coverage**| 51.24%     |
+| **Lines Covered** | 1,161      |
+| **Lines Total**   | 2,266      |
 | **Test Duration** | 23 minutes |
 
 ### 1.2 Coverage by Quality Tier
 
 #### Tier 1: Production Ready (≥75%)
 
-| File | Coverage | Status |
-|------|----------|--------|
-| turbo/prefetch.rs | 93% | [READY] |
-| validation.rs | 88% | [READY] |
-| pool.rs | 79% | [READY] |
-| ring_buffer.rs | 78% | [READY] |
-| buffer.rs | 78% | [READY] |
-| turbo/mod.rs | 77% | [READY] |
+| File              | Coverage | Status  |
+|-------------------|----------|---------|
+| turbo/prefetch.rs | 93%      | [READY] |
+| validation.rs     | 88%      | [READY] |
+| pool.rs           | 79%      | [READY] |
+| ring_buffer.rs    | 78%      | [READY] |
+| buffer.rs         | 78%      | [READY] |
+| turbo/mod.rs      | 77%      | [READY] |
 
 #### Tier 2: Adequate (50-74%)
 
-| File | Coverage | Status |
-|------|----------|--------|
-| numa.rs | 72% | [OK] |
-| node.rs | 74% | [OK] |
-| telemetry.rs | 73% | [OK] |
-| turbo/simd.rs | 67% | [OK] |
-| job.rs | 66% | [OK] |
-| turbo/precision.rs | 65% | [OK] |
-| circuit_breaker.rs | 66% | [OK] |
-| engine.rs | 62% | [OK] |
-| scheduler.rs | 59% | [OK] |
-| health.rs | 53% | [OK] |
-| state.rs | 51% | [OK] |
+| File              | Coverage | Status |
+|-------------------|----------|--------|
+| numa.rs           | 72%      | [OK]   |
+| node.rs           | 74%      | [OK]   |
+| telemetry.rs      | 73%      | [OK]   |
+| turbo/simd.rs     | 67%      | [OK]   |
+| job.rs            | 66%      | [OK]   |
+| turbo/precision.rs| 65%      | [OK]   |
+| circuit_breaker.rs| 66%      | [OK]   |
+| engine.rs         | 62%      | [OK]   |
+| scheduler.rs      | 59%      | [OK]   |
+| health.rs         | 53%      | [OK]   |
+| state.rs          | 51%      | [OK]   |
 
 #### Tier 3: Needs Improvement (25-49%)
 
-| File | Coverage | Priority |
-|------|----------|----------|
-| allocator.rs | 49% | Medium |
-| io.rs | 47% | Medium |
-| thread.rs | 44% | Medium |
-| s3.rs | 41% | Medium |
-| config.rs | 37% | Medium |
+| File              | Coverage | Priority |
+|-------------------|----------|----------|
+| allocator.rs      | 49%      | Medium   |
+| io.rs             | 47%      | Medium   |
+| thread.rs         | 44%      | Medium   |
+| s3.rs             | 41%      | Medium   |
+| config.rs         | 37%      | Medium   |
 
 #### Tier 4: Critical Gaps (<25%)
 
-| File | Coverage | Priority |
-|------|----------|----------|
-| turbo/onnx.rs | 23% | HIGH |
-| uring.rs | 15% | HIGH |
-| metrics.rs | 12% | HIGH |
-| dataloader.rs | 11% | HIGH |
-| agent.rs | 6% | CRITICAL |
-| api/rest.rs | 0%* | CRITICAL |
-| api/grpc.rs | 0% | CRITICAL |
-| tensorrt.rs | 0% | LOW** |
+| File              | Coverage | Priority |
+|-------------------|----------|----------|
+| turbo/onnx.rs     | 23%      | HIGH     |
+| uring.rs          | 15%      | HIGH     |
+| metrics.rs        | 12%      | HIGH     |
+| dataloader.rs     | 11%      | HIGH     |
+| agent.rs          | 6%       | CRITICAL |
+| api/rest.rs       | 0%*      | CRITICAL |
+| api/grpc.rs       | 0%       | CRITICAL |
+| tensorrt.rs       | 0%       | LOW**    |
 
 *Note: 15 tests added after initial measurement  
 **GPU code cannot be tested without hardware
@@ -102,14 +102,14 @@ Tests:     ████████████████████░░░
 
 ### 2.1 Overall Results
 
-| Metric | Value |
-|--------|-------|
-| **Total Mutants** | 1,012 |
-| **Caught (Killed)** | 336 |
-| **Missed (Survived)** | 502 |
-| **Unviable** | 157 |
-| **Timeouts** | 17 |
-| **Duration** | 3 hours 6 minutes |
+| Metric                | Value             |
+|-----------------------|-------------------|
+| **Total Mutants**     | 1,012             |
+| **Caught (Killed)**   | 336               |
+| **Missed (Survived)** | 502               |
+| **Unviable**          | 157               |
+| **Timeouts**          | 17                |
+| **Duration**          | 3 hours 6 minutes |
 
 ### 2.2 Mutation Score Calculation
 
@@ -120,25 +120,25 @@ Mutation Score = Caught / Viable = 336 / 855 = 39.3%
 
 ### 2.3 Mutation Categories
 
-| Category | Count | % of Total |
-|----------|-------|------------|
-| Return value mutations | 312 | 31% |
-| Operator mutations (*, /, +, -) | 245 | 24% |
-| Comparison mutations (==, !=, <, >) | 198 | 20% |
-| Boolean mutations (true/false) | 142 | 14% |
-| Other mutations | 115 | 11% |
+| Category                            | Count | % of Total |
+|-------------------------------------|-------|------------|
+| Return value mutations              | 312   | 31%        |
+| Operator mutations (*, /, +, -)     | 245   | 24%        |
+| Comparison mutations (==, !=, <, >) | 198   | 20%        |
+| Boolean mutations (true/false)      | 142   | 14%        |
+| Other mutations                     | 115   | 11%        |
 
 ### 2.4 Top Surviving Mutations
 
 These mutation patterns need test hardening:
 
-| Pattern | Example | Fix Strategy |
-|---------|---------|--------------|
-| `-> Ok(())` | Return success without action | Assert side effects |
-| `* with /` | Math operator swap | Boundary value tests |
-| `-> vec![]` | Empty return | Assert non-empty |
-| `== with !=` | Logic inversion | Both-branch tests |
-| `-> 0` or `-> 1` | Default returns | Assert specific values |
+| Pattern             | Example                         | Fix Strategy           |
+|---------------------|---------------------------------|------------------------|
+| `-> Ok(())`         | Return success without action   | Assert side effects    |
+| `* with /`          | Math operator swap              | Boundary value tests   |
+| `-> vec![]`         | Empty return                    | Assert non-empty       |
+| `== with !=`        | Logic inversion                 | Both-branch tests      |
+| `-> 0` or `-> 1`    | Default returns                 | Assert specific values |
 
 ---
 
@@ -146,21 +146,21 @@ These mutation patterns need test hardening:
 
 ### 3.1 Test Count by Package
 
-| Package | Unit Tests | Integration | Total |
-|---------|------------|-------------|-------|
-| zenith-core | 5 | 2 | 7 |
-| zenith-runtime-cpu | 52 | 6 | 58 |
-| zenith-scheduler | 31 | 0 | 31 |
-| **Total** | **88** | **8** | **96** |
+| Package           | Unit Tests | Integration | Total |
+|-------------------|------------|-------------|-------|
+| zenith-core       | 5          | 2           | 7     |
+| zenith-runtime-cpu| 52         | 6           | 58    |
+| zenith-scheduler  | 31         | 0           | 31    |
+| **Total**         | **88**     | **8**       | **96**|
 
 ### 3.2 Test Quality Indicators
 
-| Indicator | Status |
-|-----------|--------|
-| All tests passing | [OK] |
-| No flaky tests | [OK] |
-| Average test duration | <1ms |
-| Parallel execution | [OK] |
+| Indicator            | Status |
+|----------------------|--------|
+| All tests passing    | [OK]   |
+| No flaky tests       | [OK]   |
+| Average test duration| <1ms   |
+| Parallel execution   | [OK]   |
 
 ---
 
@@ -169,30 +169,30 @@ These mutation patterns need test hardening:
 ### Phase 1: Critical Coverage (2 weeks)
 **Target: 65% coverage, 50% mutation score**
 
-| Task | Lines to Cover | Est. Hours |
-|------|----------------|------------|
-| api/rest.rs tests | ~50 lines | 2h (done) |
-| api/grpc.rs tests | ~40 lines | 3h |
-| dataloader.rs tests | ~100 lines | 4h |
-| agent.rs tests | ~70 lines | 3h |
+| Task               | Lines to Cover | Est. Hours |
+|--------------------|----------------|------------|
+| api/rest.rs tests  | ~50 lines      | 2h (done)  |
+| api/grpc.rs tests  | ~40 lines      | 3h         |
+| dataloader.rs tests| ~100 lines     | 4h         |
+| agent.rs tests     | ~70 lines      | 3h         |
 
 ### Phase 2: Core Hardening (2 weeks)
 **Target: 70% coverage, 55% mutation score**
 
-| Task | Focus Area | Est. Hours |
-|------|------------|------------|
-| Math operator tests | simd.rs, numa.rs | 4h |
-| Return value tests | All modules | 6h |
-| Boundary tests | Buffer operations | 4h |
+| Task               | Focus Area           | Est. Hours |
+|--------------------|----------------------|------------|
+| Math operator tests| simd.rs, numa.rs     | 4h         |
+| Return value tests | All modules          | 6h         |
+| Boundary tests     | Buffer operations    | 4h         |
 
 ### Phase 3: Production Ready (4 weeks)
 **Target: 80% coverage, 70% mutation score**
 
-| Task | Focus Area | Est. Hours |
-|------|------------|------------|
-| Integration tests | End-to-end flows | 8h |
-| Error path tests | Exception handling | 6h |
-| Concurrency tests | Thread safety | 6h |
+| Task               | Focus Area           | Est. Hours |
+|--------------------|----------------------|------------|
+| Integration tests  | End-to-end flows     | 8h         |
+| Error path tests   | Exception handling   | 6h         |
+| Concurrency tests  | Thread safety        | 6h         |
 
 ---
 
@@ -212,9 +212,9 @@ quality:
 
 | Version | Coverage | Mutation | Tests |
 |---------|----------|----------|-------|
-| v0.3.0 | 60% | 45% | 100 |
-| v0.4.0 | 70% | 55% | 120 |
-| v1.0.0 | 80% | 70% | 150 |
+| v0.3.0  | 60%      | 45%      | 100   |
+| v0.4.0  | 70%      | 55%      | 120   |
+| v1.0.0  | 80%      | 70%      | 150   |
 
 ---
 
@@ -230,12 +230,12 @@ quality:
 
 ### Recent Improvements
 
-| Date | Change | Impact |
-|------|--------|--------|
-| 2024-12-10 | Added 15 REST API tests | +15 tests |
-| 2024-12-09 | Added validation tests | +5 tests |
-| 2024-12-09 | Fixed critical panics | 4 bugs fixed |
-| 2024-12-09 | Added dataloader tests | +3 tests |
+| Date       | Change                  | Impact       |
+|------------|-------------------------|--------------|
+| 2024-12-10 | Added 15 REST API tests | +15 tests    |
+| 2024-12-09 | Added validation tests  | +5 tests     |
+| 2024-12-09 | Fixed critical panics   | 4 bugs fixed |
+| 2024-12-09 | Added dataloader tests  | +3 tests     |
 
 ---
 
@@ -243,19 +243,19 @@ quality:
 
 ### Untestable Code
 
-| Category | Reason | Mitigation |
-|----------|--------|------------|
-| GPU code (tensorrt.rs) | No GPU hardware | Community testing |
-| io_uring (uring.rs) | Kernel feature | Graceful fallback |
-| ONNX runtime | External dependency | Mock testing |
+| Category               | Reason               | Mitigation           |
+|------------------------|----------------------|----------------------|
+| GPU code (tensorrt.rs) | No GPU hardware      | Community testing    |
+| io_uring (uring.rs)    | Kernel feature       | Graceful fallback    |
+| ONNX runtime           | External dependency  | Mock testing         |
 
 ### Technical Debt
 
-| Item | Impact | Priority |
-|------|--------|----------|
-| Missing gRPC tests | API reliability risk | HIGH |
-| Low dataloader coverage | Data integrity risk | HIGH |
-| No integration tests | System reliability risk | MEDIUM |
+| Item                    | Impact                  | Priority |
+|-------------------------|-------------------------|----------|
+| Missing gRPC tests      | API reliability risk    | HIGH     |
+| Low dataloader coverage | Data integrity risk     | HIGH     |
+| No integration tests    | System reliability risk | MEDIUM   |
 
 ---
 
@@ -285,11 +285,11 @@ quality:
 
 ### Current State Assessment
 
-| Aspect | Rating | Notes |
-|--------|--------|-------|
-| **Test Infrastructure** | [GOOD] | Fast, reliable |
-| **Core Coverage** | [ADEQUATE] | Key paths tested |
-| **API Coverage** | [NEEDS WORK] | Gaps in REST/gRPC |
+| Aspect                  | Rating       | Notes                  |
+|-------------------------|--------------|------------------------|
+| **Test Infrastructure** | [GOOD]       | Fast, reliable         |
+| **Core Coverage**       | [ADEQUATE]   | Key paths tested       |
+| **API Coverage**        | [NEEDS WORK] | Gaps in REST/gRPC      |
 | **Mutation Resilience** | [NEEDS WORK] | Many surviving mutants |
 
 ### Overall Quality Score

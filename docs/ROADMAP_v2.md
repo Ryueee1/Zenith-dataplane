@@ -45,21 +45,21 @@ import torch
 ---
 ## Known Issues (Being Fixed)
 
-| Issue | Status | Priority |
-|-------|--------|----------|
+| Issue                     | Status     | Priority |
+|---------------------------|------------|----------|
 | ~~`todo!()` in io_uring~~ | [OK] Fixed | Critical |
-| Panic across FFI boundary | Pending | Critical |
-| Zombie jobs in scheduler | Pending | High |
-| GPU runtime placeholders | Planned | Medium |
+| Panic across FFI boundary | Pending    | Critical |
+| Zombie jobs in scheduler  | Pending    | High     |
+| GPU runtime placeholders  | Planned    | Medium   |
 ---
 ## Target Metrics
 
-| Metric | Target | Current |
-|--------|--------|---------|
-| Data loading speedup | 2-5x | TBD |
-| Memory efficiency | +40% | TBD |
-| Setup time | < 5 min | TBD |
-| Test coverage | > 80% | ~30% |
+| Metric               | Target  | Current|
+|----------------------|---------|--------|
+| Data loading speedup | 2-5x    | TBD    |
+| Memory efficiency    | +40%    | TBD    |
+| Setup time           | < 5 min | TBD    |
+| Test coverage        | > 80%   | ~30%   |
 ---
 ## Architecture
 

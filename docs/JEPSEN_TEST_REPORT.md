@@ -14,13 +14,13 @@ Jepsen-style distributed consistency testing was performed on Zenith Dataplane t
 
 ### Test Results Overview
 
-| Test Phase | Status | Details |
-|-----------|--------|---------|
-| Connectivity | [PASS] | 6/6 inter-node connections |
-| Network Partition (Nemesis) | [PASS] | Isolation successful |
-| Recovery | [PASS] | Partition healed |
-| Concurrent Operations | [PASS] | 8/8 ops successful |
-| Linearizability | [EXPECTED FAIL] | Independent node storage |
+| Test Phase                  | Status          | Details                     |
+|-----------------------------|-----------------|-----------------------------|
+| Connectivity                | [PASS]          | 6/6 inter-node connections  |
+| Network Partition (Nemesis) | [PASS]          | Isolation successful        |
+| Recovery                    | [PASS]          | Partition healed            |
+| Concurrent Operations       | [PASS]          | 8/8 ops successful          |
+| Linearizability             | [EXPECTED FAIL] | Independent node storage    |
 
 **Duration:** 17.64 seconds  
 **Timestamp:** 2025-12-10T11:12:56
@@ -67,12 +67,12 @@ networks:
 
 ### 1.2 Node Configuration
 
-| Node | IP Address | Port | Role |
-|------|-----------|------|------|
-| zenith-node-1 | 172.28.0.11 | 8080 | Primary |
-| zenith-node-2 | 172.28.0.12 | 8080 | Replica |
-| zenith-node-3 | 172.28.0.13 | 8080 | Replica |
-| jepsen-controller | 172.28.0.10 | - | Test Orchestrator |
+| Node              | IP Address  | Port | Role              |
+|-------------------|-------------|------|-------------------|
+| zenith-node-1     | 172.28.0.11 | 8080 | Primary           |
+| zenith-node-2     | 172.28.0.12 | 8080 | Replica           |
+| zenith-node-3     | 172.28.0.13 | 8080 | Replica           |
+| jepsen-controller | 172.28.0.10 | -    | Test Orchestrator |
 
 ---
 
@@ -178,13 +178,13 @@ READ: zenith-node-3 -> linear_test_1765339975=v2_1765339976291
 
 ### 3.1 What Does This Mean?
 
-| Finding | Interpretation |
-|---------|----------------|
-| Connectivity works | Docker network properly configured |
-| Network partition handled | System tolerates network failures |
-| Recovery successful | System recovers gracefully |
-| Concurrent ops work | Thread-safety verified |
-| Linearizability fails | Expected - no replication layer |
+| Finding                   | Interpretation                     |
+|---------------------------|------------------------------------|
+| Connectivity works        | Docker network properly configured |
+| Network partition handled | System tolerates network failures  |
+| Recovery successful       | System recovers gracefully         |
+| Concurrent ops work       | Thread-safety verified             |
+| Linearizability fails     | Expected - no replication layer    |
 
 ### 3.2 Consistency Model
 
@@ -220,20 +220,20 @@ For applications requiring strong consistency:
 
 ### Test Server
 
-| Spec | Value |
-|------|-------|
-| Location | Indonesia VPS |
-| IP | 202.155.157.122 |
-| OS | Ubuntu 22.04 |
-| Docker | Available |
-| Network | Dedicated jepsen-net (172.28.0.0/16) |
+| Spec        | Value             |
+|-------------|-------------------|
+| Location    | Indonesia VPS     |
+| IP          | 202.155.157.122   |
+| OS          | Ubuntu 22.04      |
+| Docker      | Available         |
+| Network     | Dedicated jepsen-net (172.28.0.0/16) |
 
 ### Resource Limits
 
-| Container | Memory | CPU |
-|-----------|--------|-----|
-| zenith-node-* | 256MB | 0.3 cores |
-| jepsen-controller | 512MB | 0.5 cores |
+| Container         | Memory | CPU       |
+|-------------------|--------|-----------|
+| zenith-node-*     | 256MB  | 0.3 cores |
+| jepsen-controller | 512MB  | 0.5 cores |
 
 ---
 

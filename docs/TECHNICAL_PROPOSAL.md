@@ -60,12 +60,12 @@ Apache Arrow defines a language-independent columnar memory format optimized for
 
 ### 2.2 Existing Data Loaders
 
-| System | Implementation | Strengths | Limitations |
-|--------|----------------|-----------|-------------|
-| PyTorch DataLoader | Python/C++ | Flexible, multi-worker | Python GIL, no zero-copy |
-| TensorFlow tf.data | Python/C++ | Pipeline optimization | Framework-specific |
-| NVIDIA DALI | C++/CUDA | GPU acceleration | NVIDIA-only, complex API |
-| WebDataset | Python | Streaming, sharding | No native optimization |
+| System           | Implementation | Strengths               | Limitations                 |
+|------------------|----------------|-------------------------|-----------------------------|
+| PyTorch DataLoader | Python/C++ | Flexible, multi-worker | Python GIL, no zero-copy     |
+| TensorFlow tf.data | Python/C++ | Pipeline optimization | Framework-specific           |
+| NVIDIA DALI      | C++/CUDA | GPU acceleration | NVIDIA-only, complex API     |
+| WebDataset       | Python | Streaming, sharding | No native optimization       |
 
 ### 2.3 Rust for Systems Programming
 
@@ -84,21 +84,21 @@ Rust provides memory safety without garbage collection, making it ideal for:
 
 ```
 ┌─────────────────────────────────────────────────────────┐
-│                  Python Application                      │
+│                  Python Application                     │
 │  (PyTorch, TensorFlow, HuggingFace, etc.)               │
 └─────────────────────────────────────────────────────────┘
                            │
                     zenith.DataLoader
                            │
 ┌─────────────────────────────────────────────────────────┐
-│                   Python SDK Layer                       │
+│                   Python SDK Layer                      │
 │  zenith.load(), zenith.DataLoader, zenith.torch         │
 └─────────────────────────────────────────────────────────┘
                            │
                       FFI (ctypes)
                            │
 ┌─────────────────────────────────────────────────────────┐
-│                   Rust Core Engine                       │
+│                   Rust Core Engine                      │
 │  ┌─────────────┐  ┌──────────────┐  ┌────────────────┐  │
 │  │ DataLoader  │  │ Arrow IPC    │  │ Prefetch       │  │
 │  │ (Format     │  │ (Zero-copy   │  │ Pipeline       │  │
@@ -160,11 +160,11 @@ pub extern "C" fn zenith_init(config: *const c_char) -> i32 {
 
 ### 4.1 Supported Formats
 
-| Format | Implementation | Zero-Copy |
-|--------|----------------|-----------|
-| Apache Parquet | `parquet` crate | Partial |
-| Apache Arrow IPC | `arrow` crate | Full |
-| CSV | `arrow::csv` | No |
+| Format           | Implementation    | Zero-Copy |
+|------------------|-------------------|-----------|
+| Apache Parquet   | `parquet` crate   | Partial   |
+| Apache Arrow IPC | `arrow` crate     | Full      |
+| CSV              | `arrow::csv`      | No        |
 
 ### 4.2 Python Integration
 
@@ -208,11 +208,11 @@ loader = DataLoader(dataset, batch_size=64)
 
 ### 5.2 Results
 
-| System | Throughput (samples/s) | Latency p50 (ms) | Latency p99 (ms) |
-|--------|------------------------|------------------|------------------|
-| **Zenith Engine** | **1,351,591** | **0.044** | **0.074** |
-| PyArrow Direct | 1,342,076 | 0.044 | 0.077 |
-| Streaming Iterator | 320,219 | 0.050 | 0.134 |
+| System             | Throughput (samples/s) | Latency p50 (ms) | Latency p99 (ms) |
+|--------------------|------------------------|------------------|------------------|
+| **Zenith Engine**  | **1,351,591**          | **0.044**        | **0.074**        |
+| PyArrow Direct     | 1,342,076              | 0.044            | 0.077            |
+| Streaming Iterator | 320,219                | 0.050            | 0.134            |
 
 ### 5.3 Analysis
 

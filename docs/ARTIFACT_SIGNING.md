@@ -201,21 +201,21 @@ cosign verify-blob --signature zenith.sig --certificate zenith.crt zenith
 ## 6. Key Management
 ### For Production
 
-| Method | Key Storage | Rotation |
-|--------|-------------|----------|
-| Sigstore | OIDC (keyless) | Automatic |
-| GPG | Hardware token (YubiKey) | Annual |
-| KMS | AWS/GCP/Azure KMS | Per policy |
+| Method       | Key Storage                    | Rotation    |
+|--------------|--------------------------------|-------------|
+| Sigstore     | OIDC (keyless)                 | Automatic   |
+| GPG          | Hardware token (YubiKey)       | Annual      |
+| KMS          | AWS/GCP/Azure KMS              | Per policy  |
 ---
 ## 7. Compliance Checklist
 
-| Item | Status |
-|------|--------|
-| SHA256 checksums | [OK] Available |
-| Signing method documented | [OK] This document |
-| CI/CD integration ready | [OK] Workflow provided |
-| Verification script | [OK] verify_artifacts.sh |
-| SLSA guidance | [OK] Documented |
+| Item                      | Status                          |
+|---------------------------|---------------------------------|
+| SHA256 checksums          | [OK] Available                  |
+| Signing method documented | [OK] This document              |
+| CI/CD integration ready   | [OK] Workflow provided          |
+| Verification script       | [OK] verify_artifacts.sh        |
+| SLSA guidance             | [OK] Documented                 |
 ---
 **Document Version:** 1.0 
 **Last Updated:** 2025-12-10

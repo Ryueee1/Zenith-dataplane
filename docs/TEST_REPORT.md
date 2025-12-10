@@ -219,13 +219,13 @@ Jepsen-style testing was performed on 2025-12-10 to verify distributed system be
 | Network | Docker bridge (172.28.0.0/16) |
 ### 7.2 Test Results
 
-| Test Phase | Status | Details |
-|-----------|--------|---------|
-| Connectivity | [PASS] | 6/6 inter-node connections |
-| Network Partition (Nemesis) | [PASS] | Node isolation successful |
-| Recovery | [PASS] | Partition healed |
-| Concurrent Operations | [PASS] | 8/8 ops successful |
-| Linearizability | [EXPECTED] | Independent node storage |
+| Test Phase                  | Status     | Details                      |
+|-----------------------------|------------|------------------------------|
+| Connectivity                | [PASS]     | 6/6 inter-node connections   |
+| Network Partition (Nemesis) | [PASS]     | Node isolation successful    |
+| Recovery                    | [PASS]     | Partition healed             |
+| Concurrent Operations       | [PASS]     | 8/8 ops successful           |
+| Linearizability             | [EXPECTED] | Independent node storage     |
 **Overall:** 4/5 tests passed (80%)
 ### 7.3 Key Findings
 - **Network Resilience:** System handles network partitions correctly
@@ -245,42 +245,42 @@ See [JEPSEN_TEST_REPORT.md](./JEPSEN_TEST_REPORT.md) for complete details.
 
 ### 8.1 NVML Device Detection
 
-| Metric | Result |
-|--------|--------|
-| Devices Detected | 1 |
-| Device Name | Tesla T4 |
-| Total Memory | 16.1 GB |
-| Free Memory | 15.8 GB |
-| Compute Capability | 7.5 |
-| Temperature | 54-61C |
+| Metric                  | Result     |
+|-------------------------|------------|
+| Devices Detected        | 1          |
+| Device Name             | Tesla T4   |
+| Total Memory            | 16.1 GB    |
+| Free Memory             | 15.8 GB    |
+| Compute Capability      | 7.5        |
+| Temperature             | 54-61C     |
 
 ### 8.2 CUDA Runtime Performance
 
-| Operation | Throughput | Status |
-|-----------|------------|--------|
-| cudaMalloc (1GB) | Instant | [OK] PASS |
-| cudaMemcpy H2D | 3.5 GB/s | [OK] PASS |
-| cudaMemcpy D2H | 3.8 GB/s | [OK] PASS |
-| Data Integrity | 100% | [OK] PASS |
+| Operation               | Throughput | Status |
+|-------------------------|------------|--------|
+| cudaMalloc (1GB)        | Instant    | [OK]   |
+| cudaMemcpy H2D          | 3.5 GB/s   | [OK]   |
+| cudaMemcpy D2H          | 3.8 GB/s   | [OK]   |
+| Data Integrity          | 100%       | [OK]   |
 
 ### 8.3 Data Loading Benchmark
 
-| Batch Size | Samples/sec | Throughput | Latency |
-|------------|-------------|------------|---------|
-| 32 | 20,513 | 12.35 GB/s | 1.56 ms |
-| 64 | 20,529 | 12.36 GB/s | 3.12 ms |
-| 128 | 20,545 | 12.37 GB/s | 6.23 ms |
-| 256 | 20,545 | 12.37 GB/s | 12.46 ms |
+| Batch Size | Samples/sec | Throughput | Latency  |
+|------------|-------------|------------|----------|
+| 32         | 20,513      | 12.35 GB/s | 1.56 ms  |
+| 64         | 20,529      | 12.36 GB/s | 3.12 ms  |
+| 128        | 20,545      | 12.37 GB/s | 6.23 ms  |
+| 256        | 20,545      | 12.37 GB/s | 12.46 ms |
 
 **Peak:** 20,545 samples/sec at 12.37 GB/s (78% of PCIe Gen3 x16 max)
 
 ### 8.4 Inference Optimization
 
-| Method | Latency (bs=1) | Speedup |
-|--------|----------------|---------|
-| PyTorch Baseline | 1.87 ms | 1.0x |
-| TorchScript JIT | 0.90 ms | 2.09x |
-| FP16 Mixed Precision | 0.80 ms | 2.34x |
+| Method               | Latency (bs=1) | Speedup |
+|----------------------|----------------|---------|
+| PyTorch Baseline     | 1.87 ms        | 1.0x    |
+| TorchScript JIT      | 0.90 ms        | 2.09x   |
+| FP16 Mixed Precision | 0.80 ms        | 2.34x   |
 
 ### 8.5 Key Findings
 

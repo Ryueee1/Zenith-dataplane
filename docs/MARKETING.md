@@ -269,15 +269,15 @@ PyPI: https://pypi.org/project/zenith-ai/
 
 ## Publication Schedule
 
-| Day | Platform | Action |
-|-----|----------|--------|
-| Day 1 | Hacker News | Submit Show HN |
-| Day 1 | Twitter/X | Post thread |
-| Day 2 | Reddit r/MachineLearning | Post [P] project |
-| Day 2 | LinkedIn | Professional announcement |
-| Day 3 | Reddit r/rust | Share technical details |
-| Day 4 | Dev.to | Publish technical article |
-| Week 2 | Medium | In-depth architecture post |
+| Day    | Platform                 | Action                     |
+|--------|--------------------------|----------------------------|
+| Day 1  | Hacker News              | Submit Show HN             |
+| Day 1  | Twitter/X                | Post thread                |
+| Day 2  | Reddit r/MachineLearning | Post [P] project           |
+| Day 2  | LinkedIn                 | Professional announcement  |
+| Day 3  | Reddit r/rust            | Share technical details    |
+| Day 4  | Dev.to                   | Publish technical article  |
+| Week 2 | Medium                   | In-depth architecture post |
 
 ---
 

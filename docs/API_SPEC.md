@@ -26,14 +26,14 @@ void zenith_free(void* engine);
 ## 2. Event Envelope (Internal / Wire)
 When an event transcends the ring buffer (e.g. to network), it follows this standard binary layout:
 
-| Offset | Type   | Name         | Description |
-| :---   | :---   | :---         | :---        |
-| 0      | u32    | source_id    | Publisher ID |
-| 4      | u64    | seq_no       | Monotonic Sequence |
+| Offset | Type   | Name         | Description                  |
+| :---   | :---   | :---         | :---                         |
+| 0      | u32    | source_id    | Publisher ID                 |
+| 4      | u64    | seq_no       | Monotonic Sequence           |
 | 12     | u64    | ts_ns        | Ingest Timestamp (Unix Nano) |
-| 20     | u32    | flags        | Bitmask (0x1=Heartbeat) |
-| 24     | u32    | payload_len  | Length of Arrow IPC buffer |
-| 28     | bytes  | payload      | Arrow IPC Stream |
+| 20     | u32    | flags        | Bitmask (0x1=Heartbeat)      |
+| 24     | u32    | payload_len  | Length of Arrow IPC buffer   |
+| 28     | bytes  | payload      | Arrow IPC Stream             |
 
 ## 3. WASM Host Interface
 Plugins typically export:

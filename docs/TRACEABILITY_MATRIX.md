@@ -11,12 +11,12 @@ This document provides bidirectional traceability between:
 - **Requirements** → **Code Implementation** → **Test Cases**
 ### Traceability Legend
 
-| Symbol | Meaning |
-|--------|---------|
-| [OK] | Fully Traced |
-| [!] | Partially Traced |
-| [FAIL] | Not Traced |
-| N/A | Not Applicable |
+| Symbol | Meaning          |
+|--------|------------------|
+| [OK]   | Fully Traced     |
+| [!]    | Partially Traced |
+| [FAIL] | Not Traced       |
+| N/A    | Not Applicable   |
 ---
 ## 2. Functional Requirements
 ### FR-001: Data Loading Engine
@@ -67,48 +67,49 @@ This document provides bidirectional traceability between:
 ## 3. Non-Functional Requirements
 ### NFR-001: Performance
 
-| Req ID | Requirement | Metric | Evidence | Status |
-|--------|-------------|--------|----------|--------|
-| NFR-001.1 | High throughput | >1M samples/sec | `BENCHMARK_REPORT.md` (1.35M samples/sec) | [OK] |
-| NFR-001.2 | Low latency | p99 < 1ms | `BENCHMARK_REPORT.md` (0.074ms p99) | [OK] |
-| NFR-001.3 | SIMD optimization | Vectorized ops | `zenith-runtime-cpu/src/turbo/simd.rs` | [OK] |
+| Req ID     | Requirement           | Metric | Evidence | Status |
+|------------|-----------------------|--------|----------|--------|
+| NFR-001.1  | High throughput       | >1M samples/sec | `BENCHMARK_REPORT.md` (1.35M samples/sec) | [OK] |
+| NFR-001.2  | Low latency           | p99 < 1ms       | `BENCHMARK_REPORT.md` (0.074ms p99) | [OK] |
+| NFR-001.3  | SIMD optimization     | Vectorized ops | `zenith-runtime-cpu/src/turbo/simd.rs` | [OK] |
 ### NFR-002: Security
 
-| Req ID | Requirement | Evidence | Status |
-|--------|-------------|----------|--------|
-| NFR-002.1 | No critical CVEs | `cargo audit` (0 critical) | [OK] |
-| NFR-002.2 | No hardcoded secrets | Secret scan clean | [OK] |
-| NFR-002.3 | SBOM available | `docs/SBOM.json` (579KB) | [OK] |
-| NFR-002.4 | wasmtime secure version | v27.0.0 (CVE fixed) | [OK] |
+| Req ID    | Requirement             | Evidence                   | Status|
+|-----------|-------------------------|----------------------------|-------|
+| NFR-002.1 | No critical CVEs        | `cargo audit` (0 critical) | [OK]  |
+| NFR-002.2 | No hardcoded secrets    | Secret scan clean          | [OK]  |
+| NFR-002.3 | SBOM available          | `docs/SBOM.json` (579KB)   | [OK]  |
+| NFR-002.4 | wasmtime secure version | v27.0.0 (CVE fixed)        | [OK]  |
 ### NFR-003: Reliability
 
-| Req ID | Requirement | Evidence | Status |
-|--------|-------------|----------|--------|
-| NFR-003.1 | 100% test pass rate | 109/109 tests pass | [OK] |
-| NFR-003.2 | Mutation testing | 88.2% score | [OK] |
-| NFR-003.3 | Distributed consistency | Jepsen 80% pass | [OK] |
+| Req ID    | Requirement             | Evidence           | Status |
+|-----------|-------------------------|--------------------|--------|
+| NFR-003.1 | 100% test pass rate     | 109/109 tests pass | [OK]   |
+| NFR-003.2 | Mutation testing        | 88.2% score        | [OK]   |
+| NFR-003.3 | Distributed consistency | Jepsen 80% pass    | [OK]   |
 ---
 ## 4. Test Coverage Matrix
 ### Unit Tests by Module
 
-| Module | Test Count | Pass Rate | Coverage |
-|--------|-----------|-----------|----------|
-| zenith-core | 17 | 100% | Traced |
-| zenith-runtime-cpu | 52 | 100% | Traced |
-| zenith-runtime | 1 | 100% | Traced |
-| zenith-host-api | 17 | 100% | Traced |
-| zenith-scheduler | 6 | 100% | Traced |
-| zenith-dataplane | 3 | 100% | Traced |
-| zenith-runtime-gpu | 10 | 100% | Traced |
-| zenith-bench | 2 | 100% | Traced |
-| **Total** | **109** | **100%** | **Traced** |
+
+| Module             | Test Count | Pass Rate | Coverage |
+|--------------------|-----------|-----------|-----------|
+| zenith-core        | 17        | 100%      | Traced    |
+| zenith-runtime-cpu | 52        | 100%      | Traced    |
+| zenith-runtime     | 1         | 100%      | Traced    |
+| zenith-host-api    | 17        | 100%      | Traced    |
+| zenith-scheduler   | 6         | 100%      | Traced    |
+| zenith-dataplane   | 3         | 100%      | Traced    |
+| zenith-runtime-gpu | 10        | 100%      | Traced    |
+| zenith-bench       | 2         | 100%      | Traced    |
+| **Total**          | **109**   | **100%**  | **Traced**|
 ### Integration Tests
 
-| Test Suite | Location | Status |
-|-----------|----------|--------|
-| E2E Tests | `tests/e2e/` | Available |
-| FFI Tests | `tests/ffi/` | Available |
-| WASM Tests | `tests/wasm/` | Available |
+| Test Suite   | Location        | Status    |
+|--------------|-----------------|-----------|
+| E2E Tests    | `tests/e2e/`    | Available |
+| FFI Tests    | `tests/ffi/`    | Available |
+| WASM Tests   | `tests/wasm/`   | Available |
 | Jepsen Tests | `tests/jepsen/` | Available |
 ---
 ## 5. Code → Test Mapping
@@ -163,23 +164,23 @@ host-api/src/
 ---
 ## 6. Requirements Without Tests (Gap Analysis)
 
-| Req ID | Requirement | Reason | Priority |
-|--------|-------------|--------|----------|
-| FR-006.1 | GPU CUDA operations | Hardware not available | P2 |
-| FR-006.2 | TensorRT integration | Hardware not available | P2 |
-| FR-006.3 | Multi-GPU support | Hardware not available | P2 |
-| NFR-004.1 | Reproducible builds | Not implemented | P1 |
-| NFR-004.2 | Artifact signing | Not implemented | P1 |
+| Req ID    | Requirement          | Reason                 | Priority |
+|-----------|----------------------|------------------------|----------|
+| FR-006.1  | GPU CUDA operations  | Hardware not available | P2       |
+| FR-006.2  | TensorRT integration | Hardware not available | P2       |
+| FR-006.3  | Multi-GPU support    | Hardware not available | P2       |
+| NFR-004.1 | Reproducible builds  | Not implemented        | P1       |
+| NFR-004.2 | Artifact signing     | Not implemented        | P1       |
 ---
 ## 7. Traceability Summary
 
-| Category | Total | Traced | Coverage |
-|----------|-------|--------|----------|
-| Functional Requirements | 22 | 22 | **100%** |
-| Non-Functional Requirements | 10 | 10 | **100%** |
-| Unit Tests | 109 | 109 | **100%** |
-| Integration Tests | 4 | 4 | **100%** |
-| Security Requirements | 4 | 4 | **100%** |
+| Category                     | Total | Traced | Coverage |
+|------------------------------|-------|--------|----------|
+| Functional Requirements      | 22    | 22     | **100%** |
+| Non-Functional Requirements  | 10    | 10     | **100%** |
+| Unit Tests                   | 109   | 109    | **100%** |
+| Integration Tests            | 4     | 4      | **100%** |
+| Security Requirements        | 4     | 4      | **100%** |
 ### Verdict
 **Traceability Status: PASS**
 

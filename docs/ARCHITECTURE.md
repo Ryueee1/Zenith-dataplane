@@ -314,12 +314,12 @@ message NodeStatus {
 
 ### 6.1 Security Model
 
-| Layer | Mechanism | Description |
-|-------|-----------|-------------|
-| API | mTLS + JWT | Mutual TLS with token auth |
-| Node Agent | Seccomp | System call filtering |
-| WASM Plugins | Sandbox | Memory-isolated execution |
-| Data | Encryption | TLS in transit, AES at rest |
+| Layer              | Mechanism     | Description                     |
+|--------------------|---------------|---------------------------------|
+| API                | mTLS + JWT    | Mutual TLS with token auth      |
+| Node Agent         | Seccomp       | System call filtering           |
+| WASM Plugins       | Sandbox       | Memory-isolated execution       |
+| Data               | Encryption    | TLS in transit, AES at rest     |
 
 ### 6.2 WASM Plugin Security
 
