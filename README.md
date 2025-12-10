@@ -1,4 +1,11 @@
-# Zenith DataPlane
+<div align="center">
+  <img src="docs/assets/logo.png" alt="Zenith Logo" width="200" height="auto" />
+  <h1>Zenith DataPlane</h1>
+</div>
+
+
+
+<div align="center">
 
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
 [![Rust](https://img.shields.io/badge/Rust-1.75%2B-orange.svg)](https://www.rust-lang.org/)
@@ -9,6 +16,7 @@
 > **High-Performance Data Infrastructure for the AI Era**
 >
 > *"Stop Starving Your GPUs. Feed Them with Zenith."*
+</div>
 
 ---
 
