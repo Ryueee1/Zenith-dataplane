@@ -1,0 +1,32 @@
+# Zenith Benchmark Configuration - Parquet Workload
+# Author: Wahyu Ardiansyah
+
+workload:
+  name: "parquet_columnar"
+  description: "Large columnar Parquet files for testing block reads and zero-copy"
+  
+dataset:
+  type: "parquet"
+  path: "${ZENITH_BENCHMARK_DATA}/benchmark_parquet_small.parquet"
+  synthetic: true
+  num_rows: 100000
+  num_columns: 10
+  
+loader:
+  batch_size: 32
+  num_workers: 4
+  prefetch_factor: 2
+  pin_memory: true
+  shuffle: true
+  
+benchmark:
+  duration_seconds: 60
+  warmup_batches: 10
+  
+metrics:
+  - throughput
+  - latency_mean
+  - latency_p50
+  - latency_p95
+  - latency_p99
+  - memory_peak

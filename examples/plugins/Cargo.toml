@@ -1,0 +1,13 @@
+[package]
+name = "zenith-filter-plugin"
+version = "0.1.0"
+edition = "2021"
+description = "Example WASM filter plugin for Zenith"
+
+[lib]
+crate-type = ["cdylib"]
+path = "filter_plugin.rs"
+
+[profile.release]
+opt-level = "s"
+lto = true

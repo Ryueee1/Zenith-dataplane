@@ -1,0 +1,36 @@
+[package]
+name = "zenith-runtime-gpu"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+repository.workspace = true
+description = "GPU optimization runtime with topology awareness, kernel selection, and memory offload"
+
+[features]
+default = []
+cuda = []  # Enable CUDA support (requires CUDA toolkit)
+triton = []  # Enable Triton kernel support
+
+[dependencies]
+# Workspace dependencies
+tokio.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+anyhow.workspace = true
+thiserror.workspace = true
+tracing.workspace = true
+parking_lot.workspace = true
+bytes.workspace = true
+
+# Arrow for data transfer
+arrow.workspace = true
+arrow-array.workspace = true
+arrow-buffer.workspace = true
+
+# UUID for communicator IDs
+uuid.workspace = true
+
+[dev-dependencies]
+criterion.workspace = true
+tempfile.workspace = true

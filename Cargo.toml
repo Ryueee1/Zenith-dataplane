@@ -1,0 +1,98 @@
+[workspace]
+resolver = "2"
+
+members = [
+    # Existing data plane components
+    "cli",
+    "codegen",
+    "control-plane",
+    "core",
+    "dataplane",
+    "host-api",
+    "runtime",
+    "storage",
+    
+    # New Zenith Infrastructure components
+    "zenith-runtime-gpu",
+    "zenith-runtime-cpu",
+    "zenith-scheduler",
+    "zenith-proto",
+    "zenith-bench",
+]
+
+exclude = [
+    # WASM plugins (different target)
+    "plugins/simple_filter",
+    "plugins/ai_preprocessing/image_ops",
+    "plugins/ai_preprocessing/text_ops",
+    # Python SDK (uses maturin)
+    "sdk-python",
+]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+license = "Apache-2.0"
+authors = ["Wahyu Ardiansyah <wahyu@zenith.ai>"]
+repository = "https://github.com/vibeswithkk/Zenith-dataplane"
+homepage = "https://github.com/vibeswithkk/Zenith-dataplane"
+documentation = "https://github.com/vibeswithkk/Zenith-dataplane/tree/main/docs"
+
+[workspace.dependencies]
+# Async runtime
+tokio = { version = "1.48", features = ["full"] }
+tokio-util = { version = "0.7", features = ["full"] }
+futures = "0.3"
+
+# Serialization
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+serde_yaml = "0.9"
+
+# gRPC & Protobuf
+tonic = "0.12"
+prost = "0.13"
+prost-types = "0.13"
+
+# Apache Arrow
+arrow = { version = "53.0", features = ["pyarrow"] }
+arrow-array = "53.0"
+arrow-buffer = "53.0"
+arrow-schema = "53.0"
+arrow-ipc = "53.0"
+
+# Error handling
+anyhow = "1.0"
+thiserror = "1.0"
+
+# Logging & Tracing
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter", "json"] }
+
+# Concurrency
+parking_lot = "0.12"
+crossbeam = "0.8"
+crossbeam-channel = "0.5"
+
+# Networking
+axum = "0.8"
+tower = "0.5"
+hyper = { version = "1.0", features = ["full"] }
+
+# System
+libc = "0.2"
+nix = { version = "0.29", features = ["fs", "mman", "sched", "signal"] }
+sysinfo = "0.34"
+
+# Testing
+criterion = "0.5"
+proptest = "1.0"
+tempfile = "3.0"
+
+# Utils
+uuid = { version = "1.0", features = ["v4", "serde"] }
+bytes = "1.0"
+chrono = { version = "0.4", features = ["serde"] }
+clap = { version = "4.0", features = ["derive"] }
+config = "0.14"
+rand = "0.8"

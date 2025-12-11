@@ -1,0 +1,34 @@
+{
+    "name": "@zenith/ffi",
+    "version": "0.1.0",
+    "description": "Node.js FFI bindings for Zenith Data Plane",
+    "main": "zenith.js",
+    "scripts": {
+        "test": "mocha test.js"
+    },
+    "keywords": [
+        "zenith",
+        "data-plane",
+        "ffi",
+        "wasm",
+        "high-performance"
+    ],
+    "author": "Zenith Team",
+    "license": "Apache-2.0",
+    "dependencies": {
+        "ffi-napi": "^4.0.3",
+        "ref-napi": "^3.0.3"
+    },
+    "devDependencies": {
+        "mocha": "^10.0.0",
+        "chai": "^4.3.10"
+    },
+    "engines": {
+        "node": ">=14.0.0"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/vibeswithkk/Zenith-dataplane.git",
+        "directory": "ffi-bindings/node"
+    }
+}

@@ -1,0 +1,33 @@
+version: '3.8'
+
+services:
+  zenith-core:
+    build: 
+      context: ..
+      dockerfile: infra/Dockerfile
+    image: zenith-core:latest
+    ulimits:
+      memlock: -1 # Essential for mmap/hugepages
+    ports:
+      - "8080:8080" # Admin API
+    volumes:
+      - ./config:/etc/zenith
+      - /dev/shm:/dev/shm # Shared memory access
+    deploy:
+      resources:
+        limits:
+          memory: 4G
+          cpus: '2'
+
+  otel-collector:
+    image: otel/opentelemetry-collector:latest
+    ports:
+      - "4317:4317"
+      - "4318:4318"
+    volumes:
+      - ./otel-config.yaml:/etc/otel-collector-config.yaml
+
+  prometheus:
+    image: prom/prometheus:latest
+    ports:
+      - "9090:9090"

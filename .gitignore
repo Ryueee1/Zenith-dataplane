@@ -1,0 +1,84 @@
+# Build artifacts
+target/
+dist/
+build/
+*.egg-info/
+
+# Rust
+**/*.rs.bk
+Cargo.lock
+!sdk-python/Cargo.lock
+
+# Python
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.pyd
+.Python
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Testing & Coverage
+.coverage
+htmlcov/
+.pytest_cache/
+.tox/
+.nox/
+
+# Secrets & Credentials (IMPORTANT!)
+.env
+.env.local
+.env.*.local
+*.pem
+*.key
+*.secret
+.pypirc
+secrets/
+credentials/
+
+# API Tokens (NEVER COMMIT!)
+*token*
+*TOKEN*
+*.token
+
+# Logs
+*.log
+logs/
+
+# Temporary files
+*.tmp
+*.temp
+.tmp/
+tmp/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# MyPy
+.mypy_cache/
+
+# Wheels (built locally)
+sdk-python/target/wheels/
+
+# Documentation build
+site/
+docs/_build/
+
+# Examples data
+examples/data/
+venv/
+.venv/
+dist/
+bench/data/

@@ -1,0 +1,71 @@
+[package]
+name = "zenith-runtime-cpu"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+repository.workspace = true
+description = "Ultra-low-latency CPU runtime with NUMA awareness, io_uring, and lock-free data structures"
+
+[features]
+default = ["io_uring"]
+io_uring = ["tokio-uring"]
+onnx = ["ort"]  # ONNX Runtime integration (FREE!)
+dpdk = []  # Future: DPDK integration
+rdma = []  # Future: RDMA integration
+
+[dependencies]
+# Workspace dependencies
+tokio.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+serde_yaml.workspace = true
+anyhow.workspace = true
+thiserror.workspace = true
+tracing.workspace = true
+parking_lot.workspace = true
+crossbeam.workspace = true
+crossbeam-channel.workspace = true
+libc.workspace = true
+nix.workspace = true
+sysinfo.workspace = true
+bytes.workspace = true
+
+# io_uring support
+tokio-uring = { version = "0.5", optional = true }
+io-uring = "0.7"
+
+# Memory allocator
+jemallocator = "0.5"
+
+# Lock-free data structures
+crossbeam-queue = "0.3"
+
+# CPU affinity
+core_affinity = "0.8"
+
+# Metrics
+metrics = "0.24"
+
+# HTTP server for metrics
+axum.workspace = true
+
+# ONNX Runtime (optional, FREE!)
+ort = { version = "2.0.0-rc.10", optional = true }
+
+# Data loading
+arrow = { version = "53", features = ["csv", "ipc"] }
+parquet = { version = "53", features = ["arrow"] }
+
+[dev-dependencies]
+criterion.workspace = true
+tempfile.workspace = true
+proptest.workspace = true
+
+[[bench]]
+name = "ringbuffer"
+harness = false
+
+[[bench]]
+name = "numa_allocator"
+harness = false

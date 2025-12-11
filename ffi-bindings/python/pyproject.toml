@@ -1,0 +1,29 @@
+[build-system]
+requires = ["setuptools>=45", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "zenith-ffi"
+version = "0.1.0"
+description = "Python FFI bindings for Zenith Data Plane"
+readme = "README.md"
+requires-python = ">=3.8"
+authors = [
+    {name = "Zenith Team"}
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: Apache Software License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+]
+
+[project.urls]
+Homepage = "https://github.com/vibeswithkk/Zenith-dataplane"
+Documentation = "https://github.com/vibeswithkk/Zenith-dataplane/tree/main/ffi-bindings/python"
+Repository = "https://github.com/vibeswithkk/Zenith-dataplane"

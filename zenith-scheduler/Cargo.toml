@@ -1,0 +1,55 @@
+[package]
+name = "zenith-scheduler"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+repository.workspace = true
+description = "Lightweight GPU-aware job scheduler with gang scheduling and topology awareness"
+
+[dependencies]
+# Workspace dependencies
+tokio.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+serde_yaml.workspace = true
+anyhow.workspace = true
+thiserror.workspace = true
+tracing.workspace = true
+tracing-subscriber.workspace = true
+parking_lot.workspace = true
+crossbeam.workspace = true
+uuid.workspace = true
+chrono.workspace = true
+clap.workspace = true
+
+# gRPC
+tonic.workspace = true
+prost.workspace = true
+prost-types.workspace = true
+
+# HTTP API
+axum.workspace = true
+tower.workspace = true
+
+# Scheduling algorithms
+priority-queue = "2.0"
+petgraph = "0.6"
+
+# Node agent
+hostname = "0.4"
+num_cpus = "1.16"
+sysinfo.workspace = true
+local-ip-address = "0.6"
+
+[dev-dependencies]
+criterion.workspace = true
+tempfile.workspace = true
+proptest.workspace = true
+
+[build-dependencies]
+tonic-build = "0.12"
+
+[[bin]]
+name = "zenith-scheduler"
+path = "src/main.rs"

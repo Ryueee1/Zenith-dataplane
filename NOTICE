@@ -1,0 +1,47 @@
+Zenith AI
+Copyright 2025 Wahyu Ardiansyah
+
+This product was originally created and developed by:
+
+    Wahyu Ardiansyah
+    Indonesia 🇮🇩
+    GitHub: https://github.com/vibeswithkk
+
+Original Repository:
+    https://github.com/vibeswithkk/Zenith-dataplane
+
+================================================================================
+
+Zenith AI is a high-performance data loading and preprocessing library
+designed to accelerate AI/ML training pipelines. Built with Rust for
+speed and Python for accessibility.
+
+This project is licensed under the Apache License, Version 2.0.
+You may obtain a copy of the License at:
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+================================================================================
+
+ATTRIBUTION REQUIREMENTS:
+
+If you use, modify, or distribute this software, you must:
+
+1. Retain this NOTICE file in all copies or substantial portions
+2. Acknowledge the original author (Wahyu Ardiansyah) in derivative works
+3. State any modifications made to the original software
+
+================================================================================
+
+Third-Party Components:
+
+This project includes or depends on the following open source components:
+
+- Apache Arrow (https://arrow.apache.org/) - Apache License 2.0
+- PyO3 (https://pyo3.rs/) - Apache License 2.0
+- Wasmtime (https://wasmtime.dev/) - Apache License 2.0
+- Tokio (https://tokio.rs/) - MIT License
+
+================================================================================
+
+Made with ❤️ in Indonesia

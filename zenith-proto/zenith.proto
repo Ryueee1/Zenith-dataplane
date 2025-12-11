@@ -1,0 +1,496 @@
+// Zenith Protocol Buffers Definition
+// Copyright 2025 Wahyu Ardiansyah and Zenith AI Contributors
+// Licensed under Apache License 2.0
+//
+// This file defines the core message types for the Zenith infrastructure:
+// - Job descriptors for scheduling
+// - Node resource reporting
+// - Telemetry and metrics
+// - Control plane communication
+
+syntax = "proto3";
+
+package zenith.v1;
+
+option go_package = "github.com/vibeswithkk/zenith/proto/v1";
+
+// ============================================================================
+// COMMON TYPES
+// ============================================================================
+
+// Timestamp with nanosecond precision
+message Timestamp {
+  int64 seconds = 1;
+  int32 nanos = 2;
+}
+
+// Duration in nanoseconds
+message Duration {
+  int64 nanos = 1;
+}
+
+// Resource quantity (e.g., memory, GPU memory)
+message ResourceQuantity {
+  int64 value = 1;
+  string unit = 2;  // "bytes", "MB", "GB", "cores", "millicores"
+}
+
+// ============================================================================
+// DEVICE & TOPOLOGY DESCRIPTORS
+// ============================================================================
+
+// GPU device information
+message GpuDevice {
+  string device_id = 1;           // e.g., "GPU-0", "cuda:0"
+  string device_name = 2;         // e.g., "NVIDIA A100-SXM4-80GB"
+  string uuid = 3;                // NVIDIA UUID
+  int32 compute_capability_major = 4;
+  int32 compute_capability_minor = 5;
+  ResourceQuantity total_memory = 6;
+  ResourceQuantity free_memory = 7;
+  int32 multiprocessor_count = 8;
+  float gpu_utilization = 9;      // 0.0 - 1.0
+  float memory_utilization = 10;  // 0.0 - 1.0
+  int32 temperature_celsius = 11;
+  int32 power_usage_watts = 12;
+  int32 power_limit_watts = 13;
+  
+  // Interconnect information
+  repeated NvlinkConnection nvlink_connections = 20;
+  int32 pcie_gen = 21;
+  int32 pcie_width = 22;
+}
+
+// NVLink connection between GPUs
+message NvlinkConnection {
+  string peer_device_id = 1;
+  int32 link_count = 2;           // Number of NVLink bridges
+  int64 bandwidth_gbps = 3;       // Total bandwidth in GB/s
+}
+
+// CPU socket/NUMA information
+message CpuSocket {
+  int32 socket_id = 1;
+  int32 numa_node = 2;
+  repeated int32 cpu_cores = 3;
+  ResourceQuantity total_memory = 4;
+  ResourceQuantity free_memory = 5;
+  bool hugepages_enabled = 6;
+  int64 hugepage_size_kb = 7;
+  int64 hugepages_free = 8;
+}
+
+// Network interface
+message NetworkInterface {
+  string name = 1;                // e.g., "eth0", "ib0"
+  string type = 2;                // "ethernet", "infiniband", "roce"
+  int64 bandwidth_gbps = 3;
+  string ip_address = 4;
+  bool rdma_capable = 5;
+  string rdma_device = 6;         // e.g., "mlx5_0"
+}
+
+// Full node topology
+message NodeTopology {
+  repeated GpuDevice gpus = 1;
+  repeated CpuSocket cpu_sockets = 2;
+  repeated NetworkInterface network_interfaces = 3;
+  
+  // NVSwitch information (for DGX systems)
+  bool nvswitch_present = 10;
+  int32 nvswitch_count = 11;
+  
+  // PCIe topology
+  map<string, string> pcie_topology = 20;  // device_id -> root_complex
+}
+
+// ============================================================================
+// JOB DESCRIPTORS
+// ============================================================================
+
+// Resource requirements for a job
+message ResourceRequirements {
+  int32 gpu_count = 1;
+  ResourceQuantity gpu_memory_per_device = 2;
+  int32 cpu_cores = 3;
+  ResourceQuantity cpu_memory = 4;
+  ResourceQuantity nvme_storage = 5;
+  int64 network_bandwidth_gbps = 6;
+  
+  // Constraints
+  repeated string required_gpu_models = 10;  // e.g., ["A100", "H100"]
+  int32 min_nvlink_version = 11;
+  bool require_nvswitch = 12;
+  bool require_rdma = 13;
+  int32 min_gpu_compute_capability = 14;
+}
+
+// Locality preferences
+message LocalityPreferences {
+  bool prefer_same_node = 1;
+  bool prefer_same_rack = 2;
+  bool prefer_same_nvswitch_domain = 3;
+  repeated string preferred_nodes = 4;
+  repeated string excluded_nodes = 5;
+}
+
+// Job scheduling policies
+message SchedulingPolicy {
+  int32 priority = 1;             // Higher = more urgent
+  bool preemptible = 2;           // Can this job be preempted?
+  bool can_preempt_others = 3;    // Can this job preempt others?
+  Duration max_wait_time = 4;     // Max time in queue before failing
+  Duration max_runtime = 5;       // Max execution time
+  string queue_name = 6;          // Partition/queue name
+  
+  // Retry policy
+  int32 max_retries = 10;
+  Duration retry_delay = 11;
+  
+  // Gang scheduling
+  bool gang_schedule = 20;        // All resources must be allocated together
+  int32 min_nodes = 21;           // Minimum nodes for partial allocation
+}
+
+// Job state
+enum JobState {
+  JOB_STATE_UNSPECIFIED = 0;
+  JOB_STATE_PENDING = 1;
+  JOB_STATE_QUEUED = 2;
+  JOB_STATE_SCHEDULED = 3;
+  JOB_STATE_RUNNING = 4;
+  JOB_STATE_SUSPENDED = 5;
+  JOB_STATE_COMPLETED = 6;
+  JOB_STATE_FAILED = 7;
+  JOB_STATE_CANCELLED = 8;
+  JOB_STATE_TIMEOUT = 9;
+}
+
+// Job descriptor - the core unit of work submission
+message JobDescriptor {
+  string job_id = 1;
+  string job_name = 2;
+  string user_id = 3;
+  string project_id = 4;
+  
+  // Resources
+  ResourceRequirements resources = 10;
+  LocalityPreferences locality = 11;
+  SchedulingPolicy policy = 12;
+  
+  // Execution
+  string command = 20;
+  repeated string arguments = 21;
+  map<string, string> environment = 22;
+  string working_directory = 23;
+  
+  // Runtime configuration
+  string runtime_image = 30;      // Container image if applicable
+  map<string, string> runtime_config = 31;  // e.g., precision, offload settings
+  
+  // NCCL/collective configuration
+  bool enable_nccl = 40;
+  string nccl_unique_id = 41;
+  map<string, string> nccl_env = 42;
+  
+  // Metadata
+  Timestamp submit_time = 50;
+  map<string, string> labels = 51;
+  map<string, string> annotations = 52;
+}
+
+// Job manifest - allocation result from scheduler
+message JobManifest {
+  string job_id = 1;
+  JobDescriptor descriptor = 2;
+  
+  // Allocated resources
+  repeated NodeAllocation node_allocations = 10;
+  
+  // Collective communication setup
+  string nccl_unique_id = 20;
+  repeated RdmaEndpoint rdma_endpoints = 21;
+  
+  // Timing
+  Timestamp scheduled_time = 30;
+  Timestamp start_time = 31;
+  Duration estimated_runtime = 32;
+}
+
+// Allocation on a single node
+message NodeAllocation {
+  string node_id = 1;
+  int32 rank = 2;                 // Rank in distributed job
+  repeated string gpu_device_ids = 3;
+  repeated int32 cpu_cores = 4;
+  ResourceQuantity allocated_memory = 5;
+  map<string, string> device_env = 6;  // e.g., CUDA_VISIBLE_DEVICES
+}
+
+// RDMA endpoint for direct GPU communication
+message RdmaEndpoint {
+  string node_id = 1;
+  string device_name = 2;
+  string gid = 3;
+  int32 lid = 4;
+  int32 qp_num = 5;
+}
+
+// ============================================================================
+// NODE AGENT MESSAGES
+// ============================================================================
+
+// Node status report
+message NodeStatus {
+  string node_id = 1;
+  string hostname = 2;
+  Timestamp report_time = 3;
+  
+  // Health
+  bool healthy = 10;
+  string health_message = 11;
+  
+  // Resources
+  NodeTopology topology = 20;
+  
+  // Current load
+  float cpu_utilization = 30;
+  float memory_utilization = 31;
+  float gpu_utilization_avg = 32;
+  float network_utilization = 33;
+  
+  // Running jobs
+  repeated string running_job_ids = 40;
+  int32 available_gpu_count = 41;
+  ResourceQuantity available_memory = 42;
+}
+
+// Node registration
+message NodeRegistration {
+  string node_id = 1;
+  string hostname = 2;
+  NodeTopology topology = 3;
+  map<string, string> labels = 4;
+  Timestamp registration_time = 5;
+}
+
+// ============================================================================
+// TELEMETRY & METRICS
+// ============================================================================
+
+// Metric type
+enum MetricType {
+  METRIC_TYPE_UNSPECIFIED = 0;
+  METRIC_TYPE_COUNTER = 1;
+  METRIC_TYPE_GAUGE = 2;
+  METRIC_TYPE_HISTOGRAM = 3;
+}
+
+// Single metric point
+message MetricPoint {
+  string name = 1;
+  MetricType type = 2;
+  double value = 3;
+  Timestamp timestamp = 4;
+  map<string, string> labels = 5;
+}
+
+// Histogram metric
+message HistogramMetric {
+  string name = 1;
+  repeated double bucket_bounds = 2;
+  repeated int64 bucket_counts = 3;
+  double sum = 4;
+  int64 count = 5;
+}
+
+// Operation-level telemetry
+message OperationTrace {
+  string trace_id = 1;
+  string span_id = 2;
+  string parent_span_id = 3;
+  string operation_name = 4;
+  Timestamp start_time = 5;
+  Duration duration = 6;
+  map<string, string> tags = 7;
+  
+  // Performance counters
+  int64 flops = 10;
+  int64 bytes_read = 11;
+  int64 bytes_written = 12;
+  int64 pcie_bytes_transferred = 13;
+  int64 nvlink_bytes_transferred = 14;
+}
+
+// Telemetry batch
+message TelemetryBatch {
+  string node_id = 1;
+  string job_id = 2;
+  Timestamp batch_time = 3;
+  repeated MetricPoint metrics = 4;
+  repeated HistogramMetric histograms = 5;
+  repeated OperationTrace traces = 6;
+}
+
+// ============================================================================
+// CONTROL PLANE RPC SERVICES
+// ============================================================================
+
+// Scheduler service
+service SchedulerService {
+  // Job management
+  rpc SubmitJob(SubmitJobRequest) returns (SubmitJobResponse);
+  rpc CancelJob(CancelJobRequest) returns (CancelJobResponse);
+  rpc GetJobStatus(GetJobStatusRequest) returns (GetJobStatusResponse);
+  rpc ListJobs(ListJobsRequest) returns (ListJobsResponse);
+  
+  // Node management
+  rpc RegisterNode(NodeRegistration) returns (RegisterNodeResponse);
+  rpc ReportNodeStatus(NodeStatus) returns (ReportStatusResponse);
+  rpc DeregisterNode(DeregisterNodeRequest) returns (DeregisterNodeResponse);
+  
+  // Cluster info
+  rpc GetClusterStatus(GetClusterStatusRequest) returns (GetClusterStatusResponse);
+}
+
+// Node agent service (runs on each node)
+service NodeAgentService {
+  // Job execution
+  rpc StartJob(StartJobRequest) returns (StartJobResponse);
+  rpc StopJob(StopJobRequest) returns (StopJobResponse);
+  rpc GetJobLogs(GetJobLogsRequest) returns (stream LogEntry);
+  
+  // Health
+  rpc HealthCheck(HealthCheckRequest) returns (HealthCheckResponse);
+  
+  // Telemetry
+  rpc StreamTelemetry(stream TelemetryBatch) returns (TelemetryAck);
+}
+
+// Request/Response messages for services
+message SubmitJobRequest {
+  JobDescriptor job = 1;
+}
+
+message SubmitJobResponse {
+  string job_id = 1;
+  bool accepted = 2;
+  string message = 3;
+  int32 queue_position = 4;
+}
+
+message CancelJobRequest {
+  string job_id = 1;
+  string reason = 2;
+}
+
+message CancelJobResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+message GetJobStatusRequest {
+  string job_id = 1;
+}
+
+message GetJobStatusResponse {
+  string job_id = 1;
+  JobState state = 2;
+  JobManifest manifest = 3;
+  string message = 4;
+  Timestamp state_change_time = 5;
+}
+
+message ListJobsRequest {
+  repeated JobState state_filter = 1;
+  string user_id = 2;
+  string project_id = 3;
+  int32 limit = 4;
+  string page_token = 5;
+}
+
+message ListJobsResponse {
+  repeated GetJobStatusResponse jobs = 1;
+  string next_page_token = 2;
+  int32 total_count = 3;
+}
+
+message RegisterNodeResponse {
+  bool accepted = 1;
+  string message = 2;
+  Duration heartbeat_interval = 3;
+}
+
+message ReportStatusResponse {
+  bool acknowledged = 1;
+  repeated string pending_job_ids = 2;  // Jobs to start
+  repeated string cancel_job_ids = 3;   // Jobs to cancel
+}
+
+message DeregisterNodeRequest {
+  string node_id = 1;
+  string reason = 2;
+}
+
+message DeregisterNodeResponse {
+  bool success = 1;
+}
+
+message GetClusterStatusRequest {}
+
+message GetClusterStatusResponse {
+  int32 total_nodes = 1;
+  int32 healthy_nodes = 2;
+  int32 total_gpus = 3;
+  int32 available_gpus = 4;
+  int32 running_jobs = 5;
+  int32 pending_jobs = 6;
+}
+
+message StartJobRequest {
+  JobManifest manifest = 1;
+}
+
+message StartJobResponse {
+  bool started = 1;
+  string message = 2;
+  int32 pid = 3;
+}
+
+message StopJobRequest {
+  string job_id = 1;
+  bool force = 2;
+  int32 signal = 3;  // Unix signal number
+}
+
+message StopJobResponse {
+  bool stopped = 1;
+  string message = 2;
+}
+
+message GetJobLogsRequest {
+  string job_id = 1;
+  bool follow = 2;
+  int32 tail_lines = 3;
+}
+
+message LogEntry {
+  Timestamp timestamp = 1;
+  string stream = 2;  // "stdout" or "stderr"
+  bytes content = 3;
+}
+
+message HealthCheckRequest {
+  bool include_topology = 1;
+}
+
+message HealthCheckResponse {
+  bool healthy = 1;
+  string message = 2;
+  NodeTopology topology = 3;
+}
+
+message TelemetryAck {
+  bool received = 1;
+  int64 points_processed = 2;
+}

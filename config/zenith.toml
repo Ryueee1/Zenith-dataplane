@@ -1,0 +1,8 @@
+[server]
+port = 8080
+
+[engine]
+buffer_size = 65536
+plugins = [
+    "filter.wasm"
+]

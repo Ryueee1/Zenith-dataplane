@@ -1,0 +1,31 @@
+[package]
+name = "zenith-bench"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+repository.workspace = true
+description = "Benchmark harness for Zenith infrastructure"
+
+[dependencies]
+# Workspace
+tokio.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+anyhow.workspace = true
+tracing.workspace = true
+tracing-subscriber.workspace = true
+clap.workspace = true
+chrono.workspace = true
+
+# Zenith crates
+zenith-runtime-cpu = { path = "../zenith-runtime-cpu" }
+zenith-runtime-gpu = { path = "../zenith-runtime-gpu" }
+
+# Benchmarking
+criterion.workspace = true
+rand.workspace = true
+
+[[bin]]
+name = "zenith-bench"
+path = "src/main.rs"
