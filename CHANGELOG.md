@@ -1,3 +1,34 @@
+## [0.3.0](https://github.com/vibeswithkk/Zenith-dataplane/compare/v0.2.0...v0.3.0) (2025-12-11)
+
+
+### Features
+
+* Add Colab demo notebook and mutation-killing tests ([11f7295](https://github.com/vibeswithkk/Zenith-dataplane/commit/11f7295f228e42bbd35c76b89c2e6d4d9a4fd7a3))
+* Add comprehensive benchmark suite and documentation ([f116902](https://github.com/vibeswithkk/Zenith-dataplane/commit/f116902bbd2ca20b5d8fdaf68287a9257753001c))
+* Add comprehensive Colab notebook for full engine testing ([311be26](https://github.com/vibeswithkk/Zenith-dataplane/commit/311be267daef6025d224919912135660bcf81d51))
+* Add GPU runtime test notebook for Google Colab ([f96fee5](https://github.com/vibeswithkk/Zenith-dataplane/commit/f96fee5a07b592b0fca6959c91e7fcc707213180))
+* Add Python wheel build workflow for native Rust distribution ([f319e90](https://github.com/vibeswithkk/Zenith-dataplane/commit/f319e90440ce42b6e8ef13f343d331e694a57ced))
+* Add S3 object storage adapter (PRIORITAS 1) ([80623fa](https://github.com/vibeswithkk/Zenith-dataplane/commit/80623facc2cb7be607a811016e799e6a0b61c695))
+* Add SLSA Level 4 and comprehensive SBOM support ([9167c59](https://github.com/vibeswithkk/Zenith-dataplane/commit/9167c59c99b112e67d74bfca32b8f80670d6ba3b))
+* Add TensorRT test notebook for Colab ([52b6cb7](https://github.com/vibeswithkk/Zenith-dataplane/commit/52b6cb790cce8b6a6bcd4b4e1d670f0c793ec9e5))
+* Add WASM plugin testing for Colab ([302005f](https://github.com/vibeswithkk/Zenith-dataplane/commit/302005f6b13b0d35ebfb6068f92259c6ab7933f4))
+* Major stability improvements and DataLoader implementation ([8b33658](https://github.com/vibeswithkk/Zenith-dataplane/commit/8b33658e60b1298ae6e11dd26f7fba337582a172))
+* QA hardening - P0/P1 complete, CONDITIONAL GO status ([06d01d5](https://github.com/vibeswithkk/Zenith-dataplane/commit/06d01d525e32b650722d3b8d5a1e135491c4366c))
+* Solidify Python SDK and Scheduler ([d5b2474](https://github.com/vibeswithkk/Zenith-dataplane/commit/d5b24740d5b1087524f1e333c48778c0369e6cf6))
+* **tests:** add comprehensive mutation-killing tests for critical modules ([e873bbd](https://github.com/vibeswithkk/Zenith-dataplane/commit/e873bbd8c2c27ed6fba12b9adbb709689923b399))
+
+
+### Bug Fixes
+
+* Add allow(clippy::result_large_err) for gRPC functions ([9289e9a](https://github.com/vibeswithkk/Zenith-dataplane/commit/9289e9a0c03ad0f68d64f447ffd5b28411e2e73b))
+* Address critical clippy warnings ([407e4c3](https://github.com/vibeswithkk/Zenith-dataplane/commit/407e4c345e3a161625b0fd1a86673751a8a987cb))
+* Eliminate remaining clippy warnings ([0665a41](https://github.com/vibeswithkk/Zenith-dataplane/commit/0665a411d3f74c5a121f90f971dab5688361df72))
+* Fix compilation errors in benchmark and tests ([dca9e95](https://github.com/vibeswithkk/Zenith-dataplane/commit/dca9e959c388daf12840c181827b54fcfa5c3703))
+* Harden code against panics and improve error handling ([125422a](https://github.com/vibeswithkk/Zenith-dataplane/commit/125422aca17066aed1ebaf7ffd2aaabc9f924878))
+* Update WASM target from wasm32-wasi to wasm32-wasip1 ([ae36943](https://github.com/vibeswithkk/Zenith-dataplane/commit/ae36943742c322729143a1816e6fc7050b8319c9))
+* use correct GitHub Action dtolnay/rust-toolchain ([b00e405](https://github.com/vibeswithkk/Zenith-dataplane/commit/b00e4057ac27a828a8ac3f06ee0811081e362398))
+* Use std::f32::consts::PI instead of approximate value ([ee57fc8](https://github.com/vibeswithkk/Zenith-dataplane/commit/ee57fc80e0e3277a24f57627350fa27e61f3a30f))
+
 # Changelog
 
 All notable changes to this project will be documented in this file.
