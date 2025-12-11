@@ -1,6 +1,5 @@
 /// Structured Logging Module for WASM Plugins
 /// Provides leveled, structured logging with context
-
 use std::sync::Mutex;
 use std::collections::VecDeque;
 

@@ -1,6 +1,5 @@
 /// Random Number Generation Module for WASM Plugins
 /// Provides cryptographically secure and fast random number generation
-
 use std::sync::atomic::{AtomicU64, Ordering};
 
 static RNG_CALL_COUNT: AtomicU64 = AtomicU64::new(0);

@@ -1,6 +1,5 @@
 /// HTTP Client Module for WASM Plugins
 /// Provides HTTP request capabilities with sandboxing
-
 use std::sync::atomic::{AtomicU64, Ordering};
 
 static HTTP_CALL_COUNT: AtomicU64 = AtomicU64::new(0);
@@ -42,8 +41,8 @@ impl HttpAPI {
     pub fn request(
         method: HttpMethod,
         url: &str,
-        body: Option<&[u8]>,
-        timeout_ms: u64,
+        _body: Option<&[u8]>,
+        _timeout_ms: u64,
     ) -> Result<HttpResponse, String> {
         HTTP_CALL_COUNT.fetch_add(1, Ordering::Relaxed);
         

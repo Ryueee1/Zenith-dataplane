@@ -91,8 +91,8 @@ impl SimdOps {
         let mut result: f32 = acc.iter().sum();
         
         // Handle remainder
-        for i in (chunks * 8)..data.len() {
-            result += data[i];
+        for val in data.iter().skip(chunks * 8) {
+            result += val;
         }
         
         result

@@ -1,9 +1,7 @@
 /// Sandboxed Filesystem Module for WASM Plugins
 /// Provides restricted filesystem access with safety guarantees
-
 use std::path::PathBuf;
 use std::fs;
-use std::io::{Read, Write};
 use std::sync::RwLock;
 
 lazy_static::lazy_static! {

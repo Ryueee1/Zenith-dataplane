@@ -3,7 +3,6 @@
 ///
 /// This provides a safe, capability-based interface for plugins to interact
 /// with the Zenith runtime without compromising security.
-
 use std::sync::atomic::{AtomicU64, Ordering};
 
 // Host API modules
