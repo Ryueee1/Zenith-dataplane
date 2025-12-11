@@ -1,0 +1,125 @@
+name: Semantic Release
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  issues: write
+  pull-requests: write
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  # Check if release is needed
+  check-release:
+    name: Check Release
+    runs-on: ubuntu-latest
+    outputs:
+      new_release_published: ${{ steps.semantic.outputs.new_release_published }}
+      new_release_version: ${{ steps.semantic.outputs.new_release_version }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install semantic-release
+        run: |
+          npm install -g semantic-release@23 \
+            @semantic-release/changelog@6 \
+            @semantic-release/git@10 \
+            @semantic-release/exec@6 \
+            conventional-changelog-conventionalcommits@7
+
+      - name: Semantic Release (dry-run)
+        id: semantic
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          npx semantic-release --dry-run 2>&1 | tee release.log
+          if grep -q "Published release" release.log; then
+            echo "new_release_published=true" >> $GITHUB_OUTPUT
+            VERSION=$(grep "Published release" release.log | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | head -1)
+            echo "new_release_version=$VERSION" >> $GITHUB_OUTPUT
+          else
+            echo "new_release_published=false" >> $GITHUB_OUTPUT
+          fi
+
+  # Create release if needed
+  release:
+    name: Create Release
+    runs-on: ubuntu-latest
+    needs: check-release
+    if: needs.check-release.outputs.new_release_published == 'true'
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Install semantic-release
+        run: |
+          npm install -g semantic-release@23 \
+            @semantic-release/changelog@6 \
+            @semantic-release/git@10 \
+            @semantic-release/exec@6 \
+            conventional-changelog-conventionalcommits@7
+
+      - name: Update Cargo.toml versions
+        run: |
+          VERSION="${{ needs.check-release.outputs.new_release_version }}"
+          echo "Updating to version $VERSION"
+          
+          # Update workspace Cargo.toml
+          sed -i "s/^version = \".*\"/version = \"$VERSION\"/" Cargo.toml
+          
+          # Update all package Cargo.toml files
+          for f in */Cargo.toml; do
+            if [ -f "$f" ]; then
+              sed -i "s/^version = \"0\..*\"/version = \"$VERSION\"/" "$f"
+            fi
+          done
+
+      - name: Semantic Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: npx semantic-release
+
+      - name: Build release artifacts
+        run: |
+          cargo build --workspace --release
+          
+          # Create release archive
+          mkdir -p release
+          cp target/release/zenith-scheduler release/ 2>/dev/null || true
+          cp target/release/zenith-cli release/ 2>/dev/null || true
+          cp README.md LICENSE release/
+          tar -czvf zenith-${{ needs.check-release.outputs.new_release_version }}-linux-x86_64.tar.gz -C release .
+
+      - name: Upload Release Artifacts
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: v${{ needs.check-release.outputs.new_release_version }}
+          files: |
+            zenith-*.tar.gz
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

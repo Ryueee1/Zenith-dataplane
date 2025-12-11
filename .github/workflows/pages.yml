@@ -1,0 +1,201 @@
+name: Deploy Documentation
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Allow only one concurrent deployment
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  # Build documentation
+  build:
+    name: Build Documentation
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Cache cargo
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            target/
+          key: ${{ runner.os }}-cargo-docs-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-cargo-docs-
+
+      - name: Build Rust documentation
+        run: |
+          cargo doc --workspace --no-deps --document-private-items
+          echo '<meta http-equiv="refresh" content="0; url=zenith_core/index.html">' > target/doc/index.html
+
+      - name: Create docs directory structure
+        run: |
+          mkdir -p _site/api
+          cp -r target/doc/* _site/api/
+          
+          # Copy markdown docs
+          cp -r docs/* _site/ 2>/dev/null || true
+          cp README.md _site/ 2>/dev/null || true
+          cp CHANGELOG.md _site/ 2>/dev/null || true
+
+      - name: Create index page
+        run: |
+          cat > _site/index.html << 'EOF'
+          <!DOCTYPE html>
+          <html lang="en">
+          <head>
+              <meta charset="UTF-8">
+              <meta name="viewport" content="width=device-width, initial-scale=1.0">
+              <title>Zenith Documentation</title>
+              <style>
+                  :root {
+                      --bg: #0a0a0a;
+                      --fg: #e0e0e0;
+                      --accent: #4fc3f7;
+                      --card-bg: #1a1a1a;
+                  }
+                  * { box-sizing: border-box; margin: 0; padding: 0; }
+                  body {
+                      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+                      background: var(--bg);
+                      color: var(--fg);
+                      line-height: 1.6;
+                      min-height: 100vh;
+                  }
+                  .container {
+                      max-width: 1200px;
+                      margin: 0 auto;
+                      padding: 2rem;
+                  }
+                  header {
+                      text-align: center;
+                      padding: 4rem 2rem;
+                      border-bottom: 1px solid #333;
+                  }
+                  h1 {
+                      font-size: 3rem;
+                      font-weight: 700;
+                      margin-bottom: 1rem;
+                  }
+                  .subtitle {
+                      font-size: 1.25rem;
+                      color: #888;
+                  }
+                  .cards {
+                      display: grid;
+                      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+                      gap: 1.5rem;
+                      margin-top: 3rem;
+                  }
+                  .card {
+                      background: var(--card-bg);
+                      border-radius: 12px;
+                      padding: 2rem;
+                      text-decoration: none;
+                      color: var(--fg);
+                      transition: transform 0.2s, box-shadow 0.2s;
+                      border: 1px solid #333;
+                  }
+                  .card:hover {
+                      transform: translateY(-4px);
+                      box-shadow: 0 10px 40px rgba(79, 195, 247, 0.1);
+                      border-color: var(--accent);
+                  }
+                  .card h2 {
+                      font-size: 1.5rem;
+                      margin-bottom: 0.5rem;
+                      color: var(--accent);
+                  }
+                  .card p {
+                      color: #888;
+                  }
+                  footer {
+                      text-align: center;
+                      padding: 2rem;
+                      margin-top: 4rem;
+                      border-top: 1px solid #333;
+                      color: #666;
+                  }
+              </style>
+          </head>
+          <body>
+              <header>
+                  <h1>Zenith</h1>
+                  <p class="subtitle">High-Performance ML DataPlane for GPU Clusters</p>
+              </header>
+              <div class="container">
+                  <div class="cards">
+                      <a href="api/zenith_core/index.html" class="card">
+                          <h2>API Reference</h2>
+                          <p>Complete Rust API documentation generated from source code.</p>
+                      </a>
+                      <a href="TUTORIAL.md" class="card">
+                          <h2>Tutorial</h2>
+                          <p>Step-by-step guide to get started with Zenith.</p>
+                      </a>
+                      <a href="ARCHITECTURE.md" class="card">
+                          <h2>Architecture</h2>
+                          <p>System design and architectural decisions.</p>
+                      </a>
+                      <a href="PLUGIN_GUIDE.md" class="card">
+                          <h2>Plugin Guide</h2>
+                          <p>How to create and deploy Zenith WASM plugins.</p>
+                      </a>
+                      <a href="GPU_ACCELERATION.md" class="card">
+                          <h2>GPU Acceleration</h2>
+                          <p>CUDA, TensorRT, and Multi-GPU support documentation.</p>
+                      </a>
+                      <a href="QA_REPORT.md" class="card">
+                          <h2>QA Report</h2>
+                          <p>Quality assurance and testing documentation.</p>
+                      </a>
+                  </div>
+              </div>
+              <footer>
+                  <p>Copyright 2025 Wahyu Ardiansyah. Licensed under Apache 2.0.</p>
+              </footer>
+          </body>
+          </html>
+          EOF
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: '_site'
+
+  # Deploy to GitHub Pages
+  deploy:
+    name: Deploy to GitHub Pages
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
