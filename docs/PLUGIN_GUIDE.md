@@ -93,9 +93,9 @@ engine.load_plugin("path/to/my_plugin.wasm")
 
 ### Required Functions
 
-| Function | Signature | Description |
-|----------|-----------|-------------|
-| `process` | `(ptr, len, out_ptr, out_len) -> i32` | Main processing entry point |
+| Function      | Signature                   | Description                 |
+|-------------|-----------------------------|-----------------------------|
+| `process`     | `(ptr, len, out_ptr, out_len) -> i32` | Main processing entry point |
 | `plugin_info` | `() -> *const u8` | Return plugin name and version |
 
 ### Optional Functions
