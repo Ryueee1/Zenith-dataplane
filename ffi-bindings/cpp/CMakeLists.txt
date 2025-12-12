@@ -66,9 +66,9 @@ if(BUILD_NUMA_BACKEND)
             pthread
         )
         
-        # Export compile definitions
+        # Define ZENITH_HAS_LIBNUMA to enable libnuma code path
         target_compile_definitions(zenith_numa PRIVATE
-            ZENITH_NUMA_ENABLED=1
+            ZENITH_HAS_LIBNUMA=1
         )
         
     else()

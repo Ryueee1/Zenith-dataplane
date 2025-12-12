@@ -6,20 +6,34 @@
  *
  * Copyright 2025 Zenith Contributors
  * SPDX-License-Identifier: Apache-2.0
+ *
+ * Build with libnuma:
+ *   g++ -DZENITH_HAS_LIBNUMA -lnuma numa_backend.cpp
+ *
+ * Build without libnuma (fallback):
+ *   g++ numa_backend.cpp
  */
 
 #include "../zenith_numa.h"
-
-#ifdef __linux__
 #include <cstdlib>
 #include <cstring>
+
+// Check if libnuma is available - define ZENITH_HAS_LIBNUMA when building with
+// libnuma CMake will define this automatically when libnuma is found
+#if defined(ZENITH_HAS_LIBNUMA) && defined(__linux__)
+#define ZENITH_USE_LIBNUMA 1
 #include <numa.h>
 #include <numaif.h>
 #include <pthread.h>
 #include <sched.h>
+#else
+#define ZENITH_USE_LIBNUMA 0
+#endif
 
 // Track initialization state
 static bool g_numa_initialized = false;
+
+#if ZENITH_USE_LIBNUMA
 
 extern "C" {
 
@@ -312,7 +326,7 @@ int32_t zenith_numa_distance(int32_t node1, int32_t node2) {
 
 } // extern "C"
 
-#else // Non-Linux stubs
+#else // Fallback stubs (no libnuma available)
 
 extern "C" {
 
@@ -396,4 +410,4 @@ int32_t zenith_numa_distance(int32_t node1, int32_t node2) {
 
 } // extern "C"
 
-#endif // __linux__
+#endif // ZENITH_USE_LIBNUMA
